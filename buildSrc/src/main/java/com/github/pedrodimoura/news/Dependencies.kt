@@ -1,0 +1,53 @@
+package com.github.pedrodimoura.news
+
+private object Versions {
+    const val kotlin = "1.3.41"
+    const val coreKtx = "1.0.2"
+    const val appCompat = "1.0.2"
+    const val constraintLayout = "1.1.3"
+    const val material = "1.0.0"
+    const val junit = "4.12"
+    const val runner = "1.2.0"
+    const val espressoCore = "3.2.0"
+    const val coroutines = "1.3.0-M2"
+    const val mockito = "2.23.4"
+    const val koin = "2.0.1"
+    const val mockWebServer = "4.1.0"
+    const val picasso = "2.71828"
+    const val retrofit = "2.6.1"
+    const val okHttp = "4.1.0"
+    const val timber = "4.7.1"
+    const val lifecycle = "2.0.0"
+}
+
+object Dependencies {
+    const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
+    const val appCompat = "androidx.appcompat:appcompat:${Versions.appCompat}"
+    const val coreKtx = "androidx.core:core-ktx:${Versions.coreKtx}"
+    const val constraintLayout = "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}"
+    const val material = "com.google.android.material:material:${Versions.material}"
+    const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
+    const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
+    const val koinCore = "org.koin:koin-core:${Versions.koin}"
+    const val koinExt = "org.koin:koin-core-ext:${Versions.koin}"
+    const val koinAndroid = "org.koin:koin-android:${Versions.koin}"
+    const val koinScope = "org.koin:koin-androidx-scope:${Versions.koin}"
+    const val koinViewModel = "org.koin:koin-androidx-viewmodel:${Versions.koin}"
+    const val picasso = "com.squareup.picasso:picasso:${Versions.picasso}"
+    const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
+    const val okHttp = "com.squareup.okhttp3:okhttp:${Versions.okHttp}"
+    const val gsonConverterAdapter = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
+    const val timber = "com.jakewharton.timber:timber:${Versions.timber}"
+    const val lifecycleExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycle}"
+    const val lifecycleCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifecycle}"
+
+    const val koinTest = "org.koin:koin-test:${Versions.koin}"
+    const val mockitoCore = "org.mockito:mockito-core:${Versions.mockito}"
+    const val mockitoInline = "org.mockito:mockito-inline:${Versions.mockito}"
+    const val mockWebServer = "com.squareup.okhttp3:mockwebserver:${Versions.mockWebServer}"
+    const val junit = "junit:junit:${Versions.junit}"
+    const val lifecycleTest = "androidx.arch.core:core-testing:${Versions.lifecycle}"
+    const val runner = "androidx.test:runner:${Versions.runner}"
+    const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.espressoCore}"
+}
+
