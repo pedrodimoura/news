@@ -18,6 +18,7 @@ private object Versions {
     const val okHttp = "4.1.0"
     const val timber = "4.7.1"
     const val lifecycle = "2.0.0"
+    const val paging = "2.1.0"
 }
 
 object Dependencies {
@@ -40,6 +41,7 @@ object Dependencies {
     const val timber = "com.jakewharton.timber:timber:${Versions.timber}"
     const val lifecycleExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycle}"
     const val lifecycleCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifecycle}"
+    const val paging = "androidx.paging:paging-runtime:${Versions.paging}"
 
     const val koinTest = "org.koin:koin-test:${Versions.koin}"
     const val mockitoCore = "org.mockito:mockito-core:${Versions.mockito}"
