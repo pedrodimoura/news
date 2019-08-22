@@ -23,6 +23,7 @@ import com.github.pedrodimoura.news.Dependencies.mockWebServer
 import com.github.pedrodimoura.news.Dependencies.mockitoCore
 import com.github.pedrodimoura.news.Dependencies.mockitoInline
 import com.github.pedrodimoura.news.Dependencies.okHttp
+import com.github.pedrodimoura.news.Dependencies.paging
 import com.github.pedrodimoura.news.Dependencies.picasso
 import com.github.pedrodimoura.news.Dependencies.retrofit
 import com.github.pedrodimoura.news.Dependencies.runner
@@ -49,7 +50,8 @@ object Libraries {
         okHttp,
         gsonConverterAdapter,
         timber,
-        lifecycleExtensions
+        lifecycleExtensions,
+        paging
     )
 
     @JvmStatic

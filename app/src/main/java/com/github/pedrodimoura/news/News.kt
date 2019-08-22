@@ -1,10 +1,10 @@
 package com.github.pedrodimoura.news
 
 import android.app.Application
+import com.github.pedrodimoura.news.articles.di.articleModule
+import com.github.pedrodimoura.news.common.di.networkModule
 import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import org.koin.core.logger.Level
 
 class News : Application() {
 
@@ -12,7 +12,7 @@ class News : Application() {
         super.onCreate()
         startKoin {
             androidContext(applicationContext)
-            androidLogger(Level.DEBUG)
+            modules(arrayListOf(networkModule, articleModule))
         }
     }
 

@@ -1,4 +1,4 @@
-package com.github.pedrodimoura.news.common.domain
+package com.github.pedrodimoura.news.common.domain.usecase
 
 import com.github.pedrodimoura.news.common.presentation.viewmodel.FlowState
 
