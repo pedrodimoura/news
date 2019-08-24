@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.pedrodimoura.news.R
 import com.github.pedrodimoura.news.articles.domain.entity.Article
 import kotlinx.android.synthetic.main.item_article.view.*
+import timber.log.Timber
 
 class ArticleListAdapter :
     ListAdapter<Article, ArticleListAdapter.ArticleViewHolder>(DIFF_UTIL) {
@@ -22,6 +23,8 @@ class ArticleListAdapter :
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
         val article = getItem(position)
         article?.let { holder.title.text = it.title }
+
+        holder.itemView.setOnClickListener { Timber.d("News Clicked") }
     }
 
     class ArticleViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -18,11 +18,13 @@ object Dependencies {
         Libraries.picasso,
         Libraries.retrofit,
         Libraries.okHttp,
+        Libraries.httpLoggingInterceptor,
         Libraries.moshiConverterAdapter,
         Libraries.timber,
         Libraries.lifecycleExtensions,
         Libraries.moshi,
         Libraries.moshiAdapters,
+        Libraries.moshiKotlin,
         Libraries.roomRuntime,
         Libraries.roomExtensions
     )
@@ -89,12 +91,14 @@ private object Libraries {
     const val picasso = "com.squareup.picasso:picasso:${Versions.picasso}"
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     const val okHttp = "com.squareup.okhttp3:okhttp:${Versions.okHttp}"
+    const val httpLoggingInterceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okHttp}"
     const val moshiConverterAdapter = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
     const val timber = "com.jakewharton.timber:timber:${Versions.timber}"
     const val lifecycleExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycle}"
     const val lifecycleCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifecycle}"
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi}"
     const val moshiAdapters = "com.squareup.moshi:moshi-adapters:${Versions.moshi}"
+    const val moshiKotlin = "com.squareup.moshi:moshi-kotlin:${Versions.moshi}"
     const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
     const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"
     const val roomExtensions = "androidx.room:room-ktx:${Versions.room}"

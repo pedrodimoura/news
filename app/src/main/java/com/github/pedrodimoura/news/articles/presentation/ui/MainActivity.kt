@@ -5,7 +5,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.pedrodimoura.news.R
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleListAdapter
-import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSize
+import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSizeLookup
 import com.github.pedrodimoura.news.articles.presentation.viewmodel.ArticleViewModel
 import com.github.pedrodimoura.news.common.presentation.ui.BaseActivity
 import com.github.pedrodimoura.news.common.presentation.viewmodel.FlowState
@@ -24,7 +24,7 @@ class MainActivity : BaseActivity() {
     }
 
     private val articleListAdapter: ArticleListAdapter by currentScope.inject()
-    private val articleSpanSize: ArticleSpanSize by currentScope.inject {
+    private val articleSpanSizeLookup: ArticleSpanSizeLookup by currentScope.inject {
         parametersOf(articleRecyclerViewColumnsCount)
     }
 
@@ -36,7 +36,7 @@ class MainActivity : BaseActivity() {
 
         articleRecyclerView.apply {
             val gridLayoutManager = GridLayoutManager(context, articleRecyclerViewColumnsCount)
-            gridLayoutManager.spanSizeLookup = articleSpanSize
+            gridLayoutManager.spanSizeLookup = articleSpanSizeLookup
             adapter = articleListAdapter
             layoutManager = gridLayoutManager
         }
@@ -45,18 +45,19 @@ class MainActivity : BaseActivity() {
             when (it) {
                 is FlowState.Loading -> Timber.d("Loading")
                 is FlowState.Success -> {
+                    Timber.d("Success")
                     it.data?.let { articleTopHeadlines ->
                         articleTopHeadlines.observe(this, Observer { articles ->
                             articleListAdapter.submitList(articles)
                         })
                     } ?: handleSuccessWithNoData()
                 }
-                is FlowState.Error -> {
-
-                }
+                is FlowState.Error -> Timber.d("Error ${it.throwable}")
                 is FlowState.Done -> Timber.d("Done")
             }
         })
+
+        articleViewModel.fetch()
     }
 
     private fun handleSuccessWithNoData() {

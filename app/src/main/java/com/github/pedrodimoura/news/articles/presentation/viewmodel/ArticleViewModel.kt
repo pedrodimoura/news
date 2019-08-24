@@ -2,6 +2,7 @@ package com.github.pedrodimoura.news.articles.presentation.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.github.pedrodimoura.news.articles.domain.entity.TopHeadlinesParams
 import com.github.pedrodimoura.news.articles.domain.usecase.ArticleTopHeadlines
 import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCase
 import com.github.pedrodimoura.news.articles.presentation.ArticleInteractor
@@ -17,7 +18,8 @@ class ArticleViewModel(
     private val flowState = MutableLiveData<FlowState<ArticleTopHeadlines>>()
 
     override fun fetch() = executeFlow(flowState) {
-        fetchTopHeadlinesUseCase.execute()
+        val topHeadlinesParams = TopHeadlinesParams("de", 1, 21)
+        fetchTopHeadlinesUseCase.execute(topHeadlinesParams)
     }
 
     override fun observeTopHeadlines(): LiveData<FlowState<ArticleTopHeadlines>> = flowState

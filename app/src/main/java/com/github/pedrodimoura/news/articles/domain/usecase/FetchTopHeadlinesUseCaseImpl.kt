@@ -18,7 +18,8 @@ class FetchTopHeadlinesUseCaseImpl(
     override suspend fun execute(params: TopHeadlinesParams?): FlowState<ArticleTopHeadlines> {
         return params?.let { topHeadlinesParams ->
             try {
-                FlowState.Success(articleRepository.fetchTopHeadlines(topHeadlinesParams))
+                val result = articleRepository.fetchTopHeadlines(topHeadlinesParams)
+                FlowState.Success(result)
             } catch (e: Exception) {
                 FlowState.Error(e)
             }

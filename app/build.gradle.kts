@@ -1,5 +1,6 @@
 import com.github.pedrodimoura.news.Dependencies
 import com.github.pedrodimoura.news.config.AppConfiguration
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.android.application")
@@ -27,6 +28,18 @@ android {
                 getDefaultProguardFile(AppConfiguration.proguardAndroidOptimize), AppConfiguration.proguardRules)
         }
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
 }
 
 dependencies {

@@ -4,10 +4,11 @@ import com.github.pedrodimoura.news.articles.data.datasource.local.impl.ArticleL
 import com.github.pedrodimoura.news.articles.data.datasource.remote.ArticleService
 import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.ArticleRemoteDataSource
 import com.github.pedrodimoura.news.articles.data.repository.ArticleRepositoryImpl
+import com.github.pedrodimoura.news.articles.domain.repository.ArticleRepository
 import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCase
 import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCaseImpl
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleListAdapter
-import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSize
+import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSizeLookup
 import com.github.pedrodimoura.news.articles.presentation.ui.MainActivity
 import com.github.pedrodimoura.news.articles.presentation.viewmodel.ArticleViewModel
 import com.github.pedrodimoura.news.common.data.datasource.local.NewsRoomDatabase
@@ -16,13 +17,19 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 
+const val KOIN_ARTICLE_LOCAL_DATA_SOURCE_NAME = "articleLocalDataSource"
+const val KOIN_ARTICLE_REMOTE_DATA_SOURCE_NAME = "articleRemoteDataSource"
+
 val articleModule = module {
     single { get<Retrofit>().create(ArticleService::class.java) }
     single { get<NewsRoomDatabase>().articleDAO() }
-    single { ArticleLocalDataSource(articleDAO = get()) }
-    single { ArticleRemoteDataSource(articleService = get()) }
-    single {
-        ArticleRepositoryImpl(articleLocalDataSource = get(), articleRemoteDataSource = get())
+    single(named(KOIN_ARTICLE_LOCAL_DATA_SOURCE_NAME)) { ArticleLocalDataSource(articleDAO = get()) }
+    single(named(KOIN_ARTICLE_REMOTE_DATA_SOURCE_NAME)) { ArticleRemoteDataSource(articleService = get()) }
+    single<ArticleRepository> {
+        ArticleRepositoryImpl(
+            articleLocalDataSource = get(named(KOIN_ARTICLE_LOCAL_DATA_SOURCE_NAME)),
+            articleRemoteDataSource = get(named(KOIN_ARTICLE_REMOTE_DATA_SOURCE_NAME))
+        )
     }
 
     factory<FetchTopHeadlinesUseCase> { FetchTopHeadlinesUseCaseImpl(articleRepository = get()) }
@@ -36,7 +43,7 @@ val articleModule = module {
     scope(named<MainActivity>()) {
         scoped { ArticleListAdapter() }
         scoped { (articleRecyclerViewColumnsCount: Int) ->
-            ArticleSpanSize(articleRecyclerViewColumnsCount)
+            ArticleSpanSizeLookup(articleRecyclerViewColumnsCount)
         }
     }
 

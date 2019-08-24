@@ -20,4 +20,5 @@ class ArticleLocalDataSource(
         }
 
     override suspend fun save(article: ArticleLocal) = articleDAO.save(article)
+
 }

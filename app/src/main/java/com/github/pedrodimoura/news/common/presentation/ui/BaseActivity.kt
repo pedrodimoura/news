@@ -1,7 +1,6 @@
 package com.github.pedrodimoura.news.common.presentation.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 
@@ -13,7 +12,6 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutResId)
-        Log.d("message", "message")
     }
 
 }
