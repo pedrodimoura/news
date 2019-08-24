@@ -1,4 +1,4 @@
-import com.github.pedrodimoura.news.Libraries
+import com.github.pedrodimoura.news.Dependencies
 import com.github.pedrodimoura.news.config.AppConfiguration
 
 plugins {
@@ -30,8 +30,8 @@ android {
 }
 
 dependencies {
-    Libraries.app.forEach { implementation(it) }
-    Libraries.appKapt.forEach { kapt(it) }
-    Libraries.test.forEach { testImplementation(it) }
-    Libraries.instrumented.forEach { androidTestImplementation(it) }
+    Dependencies.app.forEach { implementation(it) }
+    Dependencies.appKapt.forEach { kapt(it) }
+    Dependencies.test.forEach { testImplementation(it) }
+    Dependencies.instrumented.forEach { androidTestImplementation(it) }
 }

@@ -1,35 +1,43 @@
 package com.github.pedrodimoura.news.articles.di
 
-import com.github.pedrodimoura.news.articles.data.datasource.remote.ArticleRemoteDataSource
+import com.github.pedrodimoura.news.articles.data.datasource.local.impl.ArticleLocalDataSource
 import com.github.pedrodimoura.news.articles.data.datasource.remote.ArticleService
-import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.ArticlePageKeyDataSource
-import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.ArticlePagingDataSource
-import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.ArticleRemoteDataSourceImpl
+import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.ArticleRemoteDataSource
 import com.github.pedrodimoura.news.articles.data.repository.ArticleRepositoryImpl
-import com.github.pedrodimoura.news.articles.domain.repository.ArticleRepository
+import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCase
 import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCaseImpl
-import com.github.pedrodimoura.news.common.presentation.viewmodel.ThreadContextProvider
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleListAdapter
+import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSize
+import com.github.pedrodimoura.news.articles.presentation.ui.MainActivity
+import com.github.pedrodimoura.news.articles.presentation.viewmodel.ArticleViewModel
+import com.github.pedrodimoura.news.common.data.datasource.local.NewsRoomDatabase
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 
-const val THREAD_CONTEXT_PROVIDER_NAME = "article_thread_context_provider"
-const val JOB_NAME = "article_job"
-
 val articleModule = module {
-    factory(named(THREAD_CONTEXT_PROVIDER_NAME)) { ThreadContextProvider() }
-    factory(named(JOB_NAME)) { Job() }
+    single { get<Retrofit>().create(ArticleService::class.java) }
+    single { get<NewsRoomDatabase>().articleDAO() }
+    single { ArticleLocalDataSource(articleDAO = get()) }
+    single { ArticleRemoteDataSource(articleService = get()) }
     single {
-        ArticlePageKeyDataSource(
-            articleService = get<Retrofit>().create(ArticleService::class.java),
-            coroutineScope = CoroutineScope(
-                get<ThreadContextProvider>(named(THREAD_CONTEXT_PROVIDER_NAME)).io + get<Job>(named(JOB_NAME))),
-            threadContextProvider = get(named(THREAD_CONTEXT_PROVIDER_NAME)))
+        ArticleRepositoryImpl(articleLocalDataSource = get(), articleRemoteDataSource = get())
     }
-    single { ArticlePagingDataSource(articlePageKeyDataSource = get()) }
-    single<ArticleRemoteDataSource> { ArticleRemoteDataSourceImpl(articlePagingDataSource = get()) }
-    single<ArticleRepository> { ArticleRepositoryImpl(articleRemoteDataSource = get()) }
-    factory { FetchTopHeadlinesUseCaseImpl(articleRepository = get()) }
+
+    factory<FetchTopHeadlinesUseCase> { FetchTopHeadlinesUseCaseImpl(articleRepository = get()) }
+    viewModel {
+        ArticleViewModel(
+            fetchTopHeadlinesUseCase = get(),
+            threadContextProvider = get()
+        )
+    }
+
+    scope(named<MainActivity>()) {
+        scoped { ArticleListAdapter() }
+        scoped { (articleRecyclerViewColumnsCount: Int) ->
+            ArticleSpanSize(articleRecyclerViewColumnsCount)
+        }
+    }
+
 }

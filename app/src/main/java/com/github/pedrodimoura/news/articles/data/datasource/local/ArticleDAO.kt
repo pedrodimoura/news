@@ -14,6 +14,6 @@ interface ArticleDAO {
     suspend fun save(articleLocal: ArticleLocal)
 
     @Query("SELECT * FROM article")
-    fun queryAll(): LiveData<List<ArticleLocal>>
+    suspend fun queryAll(): LiveData<List<ArticleLocal>>
 
 }
