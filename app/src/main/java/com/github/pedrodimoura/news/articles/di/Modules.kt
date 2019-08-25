@@ -7,6 +7,7 @@ import com.github.pedrodimoura.news.articles.data.repository.ArticleRepositoryIm
 import com.github.pedrodimoura.news.articles.domain.repository.ArticleRepository
 import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCase
 import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCaseImpl
+import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleItemDecoration
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleListAdapter
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSizeLookup
 import com.github.pedrodimoura.news.articles.presentation.ui.MainActivity
@@ -42,6 +43,9 @@ val articleModule = module {
 
     scope(named<MainActivity>()) {
         scoped { ArticleListAdapter() }
+        scoped { (totalColumns: Int, margin: Float) ->
+            ArticleItemDecoration(totalColumns, margin.toInt())
+        }
         scoped { (articleRecyclerViewColumnsCount: Int) ->
             ArticleSpanSizeLookup(articleRecyclerViewColumnsCount)
         }

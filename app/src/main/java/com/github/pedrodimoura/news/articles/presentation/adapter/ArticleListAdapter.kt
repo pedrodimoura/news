@@ -12,8 +12,7 @@ import com.github.pedrodimoura.news.articles.domain.entity.Article
 import kotlinx.android.synthetic.main.item_article.view.*
 import timber.log.Timber
 
-class ArticleListAdapter :
-    ListAdapter<Article, ArticleListAdapter.ArticleViewHolder>(DIFF_UTIL) {
+class ArticleListAdapter : ListAdapter<Article, ArticleListAdapter.ArticleViewHolder>(DIFF_UTIL) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_article, parent, false)
@@ -24,7 +23,7 @@ class ArticleListAdapter :
         val article = getItem(position)
         article?.let { holder.title.text = it.title }
 
-        holder.itemView.setOnClickListener { Timber.d("News Clicked") }
+        holder.itemView.setOnClickListener { Timber.d("OnClick: ${article.title}") }
     }
 
     class ArticleViewHolder(view: View) : RecyclerView.ViewHolder(view) {
