@@ -36,12 +36,11 @@ class ArticleListAdapter : ListAdapter<Article, ArticleListAdapter.ArticleViewHo
     }
 
     private fun sendPagingActionOn(position: Int) {
-        val percent = ((position.toFloat() / itemCount) * 100).toInt()
-        val pagingAction =
-            if (percent >= 80) {
-                currentPage++
-                PagingAction.FetchNext(currentPage)
-            } else { PagingAction.Idle }
+        val pagingAction = if (position == (itemCount - 1)) {
+            PagingAction.FetchNext(++currentPage)
+        } else {
+            PagingAction.Idle
+        }
         notifyPagingAction(pagingAction)
     }
 
@@ -49,9 +48,20 @@ class ArticleListAdapter : ListAdapter<Article, ArticleListAdapter.ArticleViewHo
         pagingActionLiveData.value = pagingAction
     }
 
+    override fun reached() {
+        currentPage--
+    }
+
     fun observePagingAction(): LiveData<PagingAction> = pagingActionLiveData
 
-    fun add(articles: ArrayList<Article>) {
+    fun getArticles(): ArrayList<Article> = articles
+
+    fun add(articles: List<Article>, forceReload: Boolean) {
+        if (forceReload) {
+            this.articles.clear()
+            currentPage = 1
+        }
+
         this.articles.addAll(articles)
         this.submitList(this.articles)
         this.notifyDataSetChanged()

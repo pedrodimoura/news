@@ -1,6 +1,7 @@
 package com.github.pedrodimoura.news.articles.presentation.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.pedrodimoura.news.R
@@ -41,17 +42,25 @@ class MainActivity : BaseActivity() {
 
     private val articleViewModel: ArticleViewModel by viewModel()
 
-    private var currentArticles = ArrayList<Article>()
-
     private var isFetchingNextPage = false
+
+    private var forceReload = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setSupportActionBar(toolbar)
+        setupSwipeRefreshLayout()
         setupRecyclerView()
         observePagingActionChanges()
         observeTopHeadlines()
         fetchTopHeadlines(savedInstanceState)
+    }
+
+    private fun setupSwipeRefreshLayout() {
+        articleSwipeRefreshLayout.setOnRefreshListener {
+            showSwipeRefresh(true)
+            articleViewModel.fetch()
+        }
     }
 
     private fun setupRecyclerView() {
@@ -71,14 +80,10 @@ class MainActivity : BaseActivity() {
                 is PagingAction.FetchNext -> {
                     if (!isFetchingNextPage) {
                         isFetchingNextPage = true
-                        Timber.d("Fetch Next Page")
                         articleViewModel.fetch(it.page)
                     }
                 }
-                is PagingAction.Idle -> {
-                    isFetchingNextPage = false
-                    Timber.d("Idle")
-                }
+                is PagingAction.Idle -> isFetchingNextPage = false
             }
         }
     }
@@ -86,36 +91,43 @@ class MainActivity : BaseActivity() {
     private fun observeTopHeadlines() {
         observe(articleViewModel.observeTopHeadlines()) {
             when (it) {
-                is FlowState.Loading -> Timber.d("Loading")
+                is FlowState.Loading -> {  }
                 is FlowState.Success -> {
-                    Timber.d("Success")
                     it.data?.let { articleTopHeadlines ->
                         articleTopHeadlines.observe(this, Observer { articles ->
                             isContentAlreadyLoaded = true
-                            currentArticles.addAll(articles)
-                            articleListAdapter.add(currentArticles)
+                            articleListAdapter.add(articles, forceReload)
                         })
                     } ?: handleSuccessWithNoData()
                 }
-                is FlowState.Error -> Timber.d("Error ${it.throwable}")
-                is FlowState.Done -> Timber.d("Done")
+                is FlowState.Error -> {
+                    articleListAdapter.reached()
+
+                    Toast.makeText(this@MainActivity, it.throwable.toString(), Toast.LENGTH_LONG).show()
+                }
+                is FlowState.Done -> showSwipeRefresh(false)
             }
         }
+    }
+
+    private fun showSwipeRefresh(show: Boolean) {
+        forceReload = show
+        articleSwipeRefreshLayout.isRefreshing = show
     }
 
     private fun fetchTopHeadlines(savedInstanceState: Bundle?) {
         if (!isContentAlreadyLoaded) {
             articleViewModel.fetch()
         } else {
-            currentArticles =
-                savedInstanceState?.getParcelableArrayList(CONTENT_BUNDLE_KEY) ?: currentArticles
-            articleListAdapter.submitList(currentArticles)
+            val savedArticles: List<Article> =
+                savedInstanceState?.getParcelableArrayList(CONTENT_BUNDLE_KEY) ?: emptyList()
+            articleListAdapter.submitList(savedArticles)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        saveContentLoaded(currentArticles, outState)
+        saveContentLoaded(articleListAdapter.getArticles(), outState)
     }
 
     private fun handleSuccessWithNoData() {
