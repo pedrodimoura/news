@@ -9,12 +9,15 @@ import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleItemDec
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleListAdapter
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSizeLookup
 import com.github.pedrodimoura.news.articles.presentation.viewmodel.ArticleViewModel
+import com.github.pedrodimoura.news.common.presentation.adapter.PagingAction
 import com.github.pedrodimoura.news.common.presentation.ui.BaseActivity
 import com.github.pedrodimoura.news.common.presentation.viewmodel.FlowState
+import com.github.pedrodimoura.news.common.util.observe
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.scope.currentScope
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
@@ -28,7 +31,7 @@ class MainActivity : BaseActivity() {
         resources.getDimension(R.dimen.article_item_margin)
     }
 
-    private val articleListAdapter: ArticleListAdapter by currentScope.inject()
+    private val articleListAdapter: ArticleListAdapter by inject()
     private val articleItemDecoration: ArticleItemDecoration by currentScope.inject {
         parametersOf(articleRecyclerViewColumnsCount, articleItemMargin)
     }
@@ -36,14 +39,17 @@ class MainActivity : BaseActivity() {
         parametersOf(articleRecyclerViewColumnsCount)
     }
 
-    private val articleViewModel: ArticleViewModel by inject()
+    private val articleViewModel: ArticleViewModel by viewModel()
 
-    private var currentArticles: List<Article> = ArrayList()
+    private var currentArticles = ArrayList<Article>()
+
+    private var isFetchingNextPage = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setSupportActionBar(toolbar)
         setupRecyclerView()
+        observePagingActionChanges()
         observeTopHeadlines()
         fetchTopHeadlines(savedInstanceState)
     }
@@ -59,8 +65,26 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private fun observePagingActionChanges() {
+        observe(articleListAdapter.observePagingAction()) {
+            when (it) {
+                is PagingAction.FetchNext -> {
+                    if (!isFetchingNextPage) {
+                        isFetchingNextPage = true
+                        Timber.d("Fetch Next Page")
+                        articleViewModel.fetch(it.page)
+                    }
+                }
+                is PagingAction.Idle -> {
+                    isFetchingNextPage = false
+                    Timber.d("Idle")
+                }
+            }
+        }
+    }
+
     private fun observeTopHeadlines() {
-        articleViewModel.observeTopHeadlines().observe(this, Observer {
+        observe(articleViewModel.observeTopHeadlines()) {
             when (it) {
                 is FlowState.Loading -> Timber.d("Loading")
                 is FlowState.Success -> {
@@ -68,15 +92,15 @@ class MainActivity : BaseActivity() {
                     it.data?.let { articleTopHeadlines ->
                         articleTopHeadlines.observe(this, Observer { articles ->
                             isContentAlreadyLoaded = true
-                            currentArticles = articles
-                            articleListAdapter.submitList(articles)
+                            currentArticles.addAll(articles)
+                            articleListAdapter.add(currentArticles)
                         })
                     } ?: handleSuccessWithNoData()
                 }
                 is FlowState.Error -> Timber.d("Error ${it.throwable}")
                 is FlowState.Done -> Timber.d("Done")
             }
-        })
+        }
     }
 
     private fun fetchTopHeadlines(savedInstanceState: Bundle?) {
@@ -91,7 +115,7 @@ class MainActivity : BaseActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        saveContentLoaded(currentArticles as ArrayList<Article>, outState)
+        saveContentLoaded(currentArticles, outState)
     }
 
     private fun handleSuccessWithNoData() {

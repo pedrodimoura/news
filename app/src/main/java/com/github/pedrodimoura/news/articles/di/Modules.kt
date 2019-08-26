@@ -41,8 +41,9 @@ val articleModule = module {
         )
     }
 
+    single { ArticleListAdapter() }
+
     scope(named<MainActivity>()) {
-        scoped { ArticleListAdapter() }
         scoped { (totalColumns: Int, margin: Float) ->
             ArticleItemDecoration(totalColumns, margin.toInt())
         }

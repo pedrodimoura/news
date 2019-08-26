@@ -17,8 +17,8 @@ class ArticleViewModel(
 
     private val flowState = MutableLiveData<FlowState<ArticleTopHeadlines>>()
 
-    override fun fetch() = executeFlow(flowState) {
-        val topHeadlinesParams = TopHeadlinesParams("de", 1, 21)
+    override fun fetch(page: Int) = executeFlow(flowState) {
+        val topHeadlinesParams = TopHeadlinesParams("de", page, 21)
         fetchTopHeadlinesUseCase.execute(topHeadlinesParams)
     }
 

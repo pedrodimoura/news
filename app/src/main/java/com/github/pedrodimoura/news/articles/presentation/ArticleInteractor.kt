@@ -11,7 +11,7 @@ interface ArticleInteractor {
     }
 
     interface ViewModel {
-        fun fetch()
+        fun fetch(page: Int = 1)
         fun observeTopHeadlines(): LiveData<FlowState<ArticleTopHeadlines>>
     }
 
