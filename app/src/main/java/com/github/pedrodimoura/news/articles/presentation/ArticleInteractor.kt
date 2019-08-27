@@ -12,7 +12,7 @@ interface ArticleInteractor {
     }
 
     interface ViewModel {
-        fun fetch(page: Int = 1)
+        fun fetch(country: String, pageSize: Int = 21)
         fun observeTopHeadlines(): LiveData<FlowState<LiveData<PagedList<Article>>>>
     }
 

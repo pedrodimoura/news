@@ -19,7 +19,11 @@ class ArticleListAdapter :
 
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
         val article = getItem(position)
-        holder.title.text = article?.title
+
+        article?.let {
+            holder.title.text = it.title
+        }
+
     }
 
     class ArticleViewHolder(view: View) : RecyclerView.ViewHolder(view) {

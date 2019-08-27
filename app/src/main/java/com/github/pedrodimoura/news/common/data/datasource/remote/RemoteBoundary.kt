@@ -4,9 +4,11 @@ import androidx.paging.PagedList
 
 abstract class RemoteBoundary<Input, Output> : PagedList.BoundaryCallback<Output>() {
 
+    // TODO: Add Coroutine Scope here
+
     protected var currentPage = 1
     protected var isExecutingTask = false
-    abstract val params: Input?
+    abstract var params: Input?
 
     override fun onZeroItemsLoaded() {
         super.onZeroItemsLoaded()

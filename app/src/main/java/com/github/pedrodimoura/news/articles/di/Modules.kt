@@ -1,12 +1,10 @@
 package com.github.pedrodimoura.news.articles.di
 
-import androidx.paging.PagedList
 import com.github.pedrodimoura.news.articles.data.datasource.local.impl.ArticleLocalDataSource
 import com.github.pedrodimoura.news.articles.data.datasource.remote.ArticleService
 import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.ArticleRemoteBoundaryCallback
 import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.ArticleRemoteDataSource
 import com.github.pedrodimoura.news.articles.data.repository.ArticleRepositoryImpl
-import com.github.pedrodimoura.news.articles.domain.entity.Article
 import com.github.pedrodimoura.news.articles.domain.repository.ArticleRepository
 import com.github.pedrodimoura.news.articles.domain.usecase.AddNewArticleImpl
 import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCaseImpl
@@ -25,6 +23,7 @@ const val KOIN_ARTICLE_LOCAL_DATA_SOURCE_NAME = "articleLocalDataSource"
 const val KOIN_ARTICLE_REMOTE_DATA_SOURCE_NAME = "articleRemoteDataSource"
 const val KOIN_FETCH_ARTICLES_NAME = "fetchArticles"
 const val KOIN_ADD_NEW_ARTICLE_NAME = "addNewArticle"
+const val KOIN_ARTICLE_REMOTE_BOUNDARY = "articleRemoteBoundary"
 
 val articleModule = module {
     single { get<Retrofit>().create(ArticleService::class.java) }
@@ -38,15 +37,12 @@ val articleModule = module {
         )
     }
 
-    single {
-        ArticleRemoteBoundaryCallback(articleRepository = get())
-                as PagedList.BoundaryCallback<Article>
-    }
+    single(named(KOIN_ARTICLE_REMOTE_BOUNDARY)) { ArticleRemoteBoundaryCallback(articleRepository = get()) }
 
     factory(named(KOIN_FETCH_ARTICLES_NAME)) {
         FetchTopHeadlinesUseCaseImpl(
             articleRepository = get(),
-            networkBoundaryCallback = get()
+            networkBoundaryCallback = get(named(KOIN_ARTICLE_REMOTE_BOUNDARY))
         )
     }
     factory(named(KOIN_ADD_NEW_ARTICLE_NAME)) { AddNewArticleImpl(articleRepository = get()) }

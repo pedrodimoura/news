@@ -12,12 +12,11 @@ class ArticleRemoteBoundaryCallback(
     private val articleRepository: ArticleRepository
 ) : RemoteBoundary<TopHeadlinesParams, Article>() {
 
-    override val params: TopHeadlinesParams? = null
+    override var params: TopHeadlinesParams? = null
 
     override fun fetchAndSave() {
         if (isExecutingTask)
             return
-
         isExecutingTask = true
         runBlocking {
             try {

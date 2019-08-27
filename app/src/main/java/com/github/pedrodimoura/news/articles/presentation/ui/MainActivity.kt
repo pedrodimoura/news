@@ -52,7 +52,7 @@ class MainActivity : BaseActivity() {
     private fun setupSwipeRefreshLayout() {
         articleSwipeRefreshLayout.setOnRefreshListener {
             showSwipeRefresh(true)
-            articleViewModel.fetch()
+            articleViewModel.fetch("de", 21)
         }
     }
 
@@ -100,7 +100,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun fetchTopHeadlines() {
-        articleViewModel.fetch()
+        articleViewModel.fetch("de", 21)
     }
 
     private fun handleSuccessWithNoData() {
