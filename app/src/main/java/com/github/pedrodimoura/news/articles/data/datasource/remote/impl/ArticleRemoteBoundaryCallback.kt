@@ -21,8 +21,8 @@ class ArticleRemoteBoundaryCallback(
         isExecutingTask = true
         runBlocking {
             try {
-                params.page = currentPage
-                val articles = articleRepository.fetchTopHeadlines(params)
+                params?.page = currentPage
+                val articles = articleRepository.fetchTopHeadlines(params!!)
                 articleRepository.save(articles)
                 currentPage++
                 isExecutingTask = false
@@ -35,7 +35,7 @@ class ArticleRemoteBoundaryCallback(
     override fun updateCurrentPageWithLastPageLoaded() {
         runBlocking {
             val rowCount = articleRepository.count()
-            val pagesAvailable = (rowCount.toFloat() / params.pageSize).roundToInt()
+            val pagesAvailable = (rowCount.toFloat() / params?.pageSize!!).roundToInt()
             currentPage = pagesAvailable
             currentPage++
         }
