@@ -2,8 +2,8 @@ package com.github.pedrodimoura.news.articles.presentation.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.github.pedrodimoura.news.articles.domain.entity.TopHeadlinesParams
-import com.github.pedrodimoura.news.articles.domain.usecase.ArticleTopHeadlines
+import androidx.paging.PagedList
+import com.github.pedrodimoura.news.articles.domain.entity.Article
 import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCase
 import com.github.pedrodimoura.news.articles.presentation.ArticleInteractor
 import com.github.pedrodimoura.news.common.presentation.viewmodel.BaseViewModel
@@ -15,12 +15,13 @@ class ArticleViewModel(
     threadContextProvider: ThreadContextProvider
 ) : BaseViewModel(threadContextProvider), ArticleInteractor.ViewModel {
 
-    private val flowState = MutableLiveData<FlowState<ArticleTopHeadlines>>()
+    private val flowState = MutableLiveData<FlowState<LiveData<PagedList<Article>>>>()
+    val flowStateNothing = MutableLiveData<FlowState<Int>>()
 
     override fun fetch(page: Int) = executeFlow(flowState) {
-        val topHeadlinesParams = TopHeadlinesParams("de", page, 21)
-        fetchTopHeadlinesUseCase.execute(topHeadlinesParams)
+        fetchTopHeadlinesUseCase.execute()
     }
 
-    override fun observeTopHeadlines(): LiveData<FlowState<ArticleTopHeadlines>> = flowState
+    override fun observeTopHeadlines(): LiveData<FlowState<LiveData<PagedList<Article>>>> =
+        flowState
 }

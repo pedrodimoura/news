@@ -1,6 +1,6 @@
 package com.github.pedrodimoura.news.articles.data.datasource.local
 
-import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -11,9 +11,12 @@ import com.github.pedrodimoura.news.articles.data.datasource.local.entity.Articl
 interface ArticleDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun save(articleLocal: ArticleLocal)
+    suspend fun save(articleLocalList: List<ArticleLocal>)
 
     @Query("SELECT * FROM article")
-    fun queryAll(): LiveData<List<ArticleLocal>>
+    fun queryAll(): DataSource.Factory<Int, ArticleLocal>
+
+    @Query("SELECT count(*) FROM article")
+    suspend fun count(): Int
 
 }

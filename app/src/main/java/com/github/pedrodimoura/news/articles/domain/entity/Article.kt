@@ -8,6 +8,7 @@ import com.github.pedrodimoura.news.common.util.writeNonNullDate
 import java.util.Date
 
 data class Article(
+    val id: Int = 0,
     val source: Source = Source(),
     val author: String = "",
     val title: String = "",
@@ -19,6 +20,7 @@ data class Article(
 ): Parcelable {
 
     constructor(parcel: Parcel) : this(
+        parcel.readInt(),
         parcel.readParcelable(Source::class.java.classLoader)!!,
         parcel.readStringOrEmpty(),
         parcel.readStringOrEmpty(),
@@ -30,6 +32,7 @@ data class Article(
     )
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeInt(id)
         dest.writeParcelable(source, 0)
         dest.writeString(author)
         dest.writeString(title)

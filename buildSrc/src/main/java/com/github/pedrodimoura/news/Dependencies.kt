@@ -26,7 +26,8 @@ object Dependencies {
         Libraries.moshiAdapters,
         Libraries.moshiKotlin,
         Libraries.roomRuntime,
-        Libraries.roomExtensions
+        Libraries.roomExtensions,
+        Libraries.paging
     )
 
     @JvmStatic
@@ -73,6 +74,7 @@ private object Versions {
     const val lifecycle = "2.0.0"
     const val moshi = "1.8.0"
     const val room = "2.2.0-beta01"
+    const val paging = "2.1.0"
 }
 
 private object Libraries {
@@ -103,6 +105,7 @@ private object Libraries {
     const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"
     const val roomExtensions = "androidx.room:room-ktx:${Versions.room}"
     const val roomTesting = "androidx.room:room-testing:${Versions.room}"
+    const val paging = "androidx.paging:paging-runtime:${Versions.paging}"
 
     const val koinTest = "org.koin:koin-test:${Versions.koin}"
     const val mockitoCore = "org.mockito:mockito-core:${Versions.mockito}"

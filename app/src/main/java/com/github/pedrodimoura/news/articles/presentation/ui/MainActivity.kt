@@ -1,16 +1,12 @@
 package com.github.pedrodimoura.news.articles.presentation.ui
 
 import android.os.Bundle
-import android.widget.Toast
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.pedrodimoura.news.R
-import com.github.pedrodimoura.news.articles.domain.entity.Article
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleItemDecoration
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleListAdapter
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSizeLookup
 import com.github.pedrodimoura.news.articles.presentation.viewmodel.ArticleViewModel
-import com.github.pedrodimoura.news.common.presentation.adapter.PagingAction
 import com.github.pedrodimoura.news.common.presentation.ui.BaseActivity
 import com.github.pedrodimoura.news.common.presentation.viewmodel.FlowState
 import com.github.pedrodimoura.news.common.util.observe
@@ -42,8 +38,6 @@ class MainActivity : BaseActivity() {
 
     private val articleViewModel: ArticleViewModel by viewModel()
 
-    private var isFetchingNextPage = false
-
     private var forceReload = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,9 +45,8 @@ class MainActivity : BaseActivity() {
         setSupportActionBar(toolbar)
         setupSwipeRefreshLayout()
         setupRecyclerView()
-        observePagingActionChanges()
         observeTopHeadlines()
-        fetchTopHeadlines(savedInstanceState)
+        fetchTopHeadlines()
     }
 
     private fun setupSwipeRefreshLayout() {
@@ -74,38 +67,29 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun observePagingActionChanges() {
-        observe(articleListAdapter.observePagingAction()) {
-            when (it) {
-                is PagingAction.FetchNext -> {
-                    if (!isFetchingNextPage) {
-                        isFetchingNextPage = true
-                        articleViewModel.fetch(it.page)
-                    }
-                }
-                is PagingAction.Idle -> isFetchingNextPage = false
-            }
-        }
-    }
-
     private fun observeTopHeadlines() {
-        observe(articleViewModel.observeTopHeadlines()) {
-            when (it) {
-                is FlowState.Loading -> {  }
-                is FlowState.Success -> {
-                    it.data?.let { articleTopHeadlines ->
-                        articleTopHeadlines.observe(this, Observer { articles ->
-                            isContentAlreadyLoaded = true
-                            articleListAdapter.add(articles, forceReload)
-                        })
+        observe(articleViewModel.observeTopHeadlines()) { flowState ->
+            when (flowState) {
+                is FlowState.Loading    -> {}
+                is FlowState.Success    -> {
+                    flowState.data?.let {
+                        log("Success!")
+                        observe(flowState.data) { pagedList ->
+                            log("Notified!")
+                            articleListAdapter.submitList(pagedList)
+                        }
                     } ?: handleSuccessWithNoData()
                 }
-                is FlowState.Error -> {
-                    articleListAdapter.reached()
+                is FlowState.Error      -> {}
+                is FlowState.Done       -> {}
+            }
+        }
 
-                    Toast.makeText(this@MainActivity, it.throwable.toString(), Toast.LENGTH_LONG).show()
+        observe(articleViewModel.flowStateNothing) {
+            when (it) {
+                is FlowState.Success -> {
+                    log("added")
                 }
-                is FlowState.Done -> showSwipeRefresh(false)
             }
         }
     }
@@ -115,23 +99,15 @@ class MainActivity : BaseActivity() {
         articleSwipeRefreshLayout.isRefreshing = show
     }
 
-    private fun fetchTopHeadlines(savedInstanceState: Bundle?) {
-        if (!isContentAlreadyLoaded) {
-            articleViewModel.fetch()
-        } else {
-            val savedArticles: List<Article> =
-                savedInstanceState?.getParcelableArrayList(CONTENT_BUNDLE_KEY) ?: emptyList()
-            articleListAdapter.submitList(savedArticles)
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        saveContentLoaded(articleListAdapter.getArticles(), outState)
+    private fun fetchTopHeadlines() {
+        articleViewModel.fetch()
     }
 
     private fun handleSuccessWithNoData() {
         Timber.d("Success without data")
     }
+
+    private fun log(message: String) =
+        Timber.tag("boundaryCallback").d(message)
 
 }

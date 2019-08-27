@@ -44,30 +44,6 @@ class ArticleItemDecoration(
 
             if (isOnTheLeft(currentPosition))
                 left = margin
-
-//            when (totalColumns) {
-//                PORTRAIT -> {
-//
-//                    val result = (currentPosition + 1).rem(7)
-//
-//                    if (PORTRAIT_LEFT.contains(result))
-//                        left = margin
-//
-//                    if (PORTRAIT_RIGHT.contains(result))
-//                        right = margin
-//                }
-//                LANDSCAPE -> {
-//
-//                    val result = currentPosition.rem(7)
-//
-//                    if (LANDSCAPE_LEFT.contains(result))
-//                        left = margin
-//
-//                    if (LANDSCAPE_RIGHT.contains(result))
-//                        right = margin
-//                }
-//            }
-
         }
     }
 
@@ -101,7 +77,7 @@ class ArticleItemDecoration(
 
     companion object {
         @JvmStatic
-        val LANDSCAPE_LEFT = arrayOf(1,4)
+        val LANDSCAPE_LEFT = arrayOf(1, 4)
         @JvmStatic
         val LANDSCAPE_RIGHT = arrayOf(3, 6)
 

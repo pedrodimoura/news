@@ -4,6 +4,7 @@ import com.github.pedrodimoura.news.articles.data.datasource.local.entity.Articl
 import com.github.pedrodimoura.news.articles.domain.entity.Article
 
 fun ArticleLocal.asArticle() = Article(
+    id,
     sourceLocal.asSource(),
     author,
     title,
