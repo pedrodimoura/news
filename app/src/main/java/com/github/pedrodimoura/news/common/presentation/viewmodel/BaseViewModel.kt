@@ -7,7 +7,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-abstract class BaseViewModel(protected val threadContextProvider: ThreadContextProvider) : ViewModel() {
+abstract class BaseViewModel(protected val threadContextProvider: ThreadContextProvider) :
+    ViewModel() {
 
     private val job: Job by lazy { Job() }
     protected val coroutineScope: CoroutineScope by lazy { CoroutineScope(threadContextProvider.io + job) }
@@ -20,8 +21,9 @@ abstract class BaseViewModel(protected val threadContextProvider: ThreadContextP
         return withContext(threadContextProvider.io) { execution() }
     }
 
-    protected inline fun <reified T> executeFlow(liveData: MutableLiveData<FlowState<T>>,
-                                                 crossinline execution: suspend CoroutineScope.() -> FlowState<T>
+    protected inline fun <reified T> executeFlow(
+        liveData: MutableLiveData<FlowState<T>>,
+        crossinline execution: suspend CoroutineScope.() -> FlowState<T>
     ) {
         launchUI {
             with(liveData) {
@@ -32,7 +34,6 @@ abstract class BaseViewModel(protected val threadContextProvider: ThreadContextP
             }
         }
     }
-
     override fun onCleared() {
         super.onCleared()
         job.cancel()

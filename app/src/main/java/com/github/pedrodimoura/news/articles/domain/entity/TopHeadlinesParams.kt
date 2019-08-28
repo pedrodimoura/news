@@ -2,6 +2,6 @@ package com.github.pedrodimoura.news.articles.domain.entity
 
 data class TopHeadlinesParams(
     val country: String,
-    val page: Int,
-    val pageSize: Int
+    var page: Int = 0,
+    val pageSize: Int = 0
 )

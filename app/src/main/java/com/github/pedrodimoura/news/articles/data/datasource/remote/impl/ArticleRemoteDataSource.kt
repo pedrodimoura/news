@@ -1,7 +1,6 @@
 package com.github.pedrodimoura.news.articles.data.datasource.remote.impl
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.paging.DataSource
 import com.github.pedrodimoura.news.articles.data.datasource.ArticleDataSource
 import com.github.pedrodimoura.news.articles.data.datasource.remote.ArticleService
 import com.github.pedrodimoura.news.articles.data.datasource.remote.entity.ArticleRemote
@@ -11,20 +10,24 @@ class ArticleRemoteDataSource(
     private val articleService: ArticleService
 ) : ArticleDataSource<ArticleRemote> {
 
-    private val articleRemoteLiveData = MutableLiveData<List<ArticleRemote>>()
-
-    override suspend fun fetchTopHeadlines(topHeadlinesParams: TopHeadlinesParams): LiveData<List<ArticleRemote>> {
-        val result = articleService.fetchTopHeadlines(
+    override suspend fun fetchMoreTopHeadlines(
+        topHeadlinesParams: TopHeadlinesParams
+    ): List<ArticleRemote> {
+        val topHeadlines = articleService.fetchTopHeadlines(
             topHeadlinesParams.country,
             topHeadlinesParams.page,
             topHeadlinesParams.pageSize
         )
-        articleRemoteLiveData.postValue(result.articles)
-        return articleRemoteLiveData
+        return topHeadlines.articles
     }
 
-    override suspend fun getAvailableTopHeadlines(): LiveData<List<ArticleRemote>> =
+    override suspend fun getAvailableTopHeadlines(): DataSource.Factory<Int, ArticleRemote> =
         throw UnsupportedOperationException()
 
-    override suspend fun save(article: ArticleRemote) = throw UnsupportedOperationException()
+    override suspend fun save(articles: List<ArticleRemote>) =
+        throw UnsupportedOperationException()
+
+    override suspend fun count(): Int =
+        throw UnsupportedOperationException()
+
 }

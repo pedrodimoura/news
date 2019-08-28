@@ -5,6 +5,7 @@ import com.github.pedrodimoura.news.articles.data.datasource.remote.entity.Artic
 import com.github.pedrodimoura.news.articles.domain.entity.Article
 
 fun ArticleRemote.asArticle() = Article(
+    0,
     sourceRemote.asSource(),
     author,
     title,
@@ -16,6 +17,7 @@ fun ArticleRemote.asArticle() = Article(
 )
 
 fun ArticleRemote.asArticleLocal() = ArticleLocal(
+    0,
     sourceRemote.asSourceLocal(),
     author,
     title,

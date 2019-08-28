@@ -1,29 +1,29 @@
 package com.github.pedrodimoura.news.articles.presentation.adapter
 
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.github.pedrodimoura.news.R
 import com.github.pedrodimoura.news.articles.domain.entity.Article
+import com.github.pedrodimoura.news.common.util.inflate
 import kotlinx.android.synthetic.main.item_article.view.*
-import timber.log.Timber
 
-class ArticleListAdapter : ListAdapter<Article, ArticleListAdapter.ArticleViewHolder>(DIFF_UTIL) {
+class ArticleListAdapter :
+    PagedListAdapter<Article, ArticleListAdapter.ArticleViewHolder>(DIFF_UTIL) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_article, parent, false)
-        return ArticleViewHolder(view)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder =
+        ArticleViewHolder(parent.inflate(R.layout.item_article, false))
 
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
         val article = getItem(position)
-        article?.let { holder.title.text = it.title }
 
-        holder.itemView.setOnClickListener { Timber.d("OnClick: ${article.title}") }
+        article?.let {
+            holder.title.text = it.title
+        }
+
     }
 
     class ArticleViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -1,7 +1,6 @@
 package com.github.pedrodimoura.news.articles.data.datasource.local.impl
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
+import androidx.paging.DataSource
 import com.github.pedrodimoura.news.articles.data.datasource.ArticleDataSource
 import com.github.pedrodimoura.news.articles.data.datasource.local.ArticleDAO
 import com.github.pedrodimoura.news.articles.data.datasource.local.entity.ArticleLocal
@@ -11,14 +10,16 @@ class ArticleLocalDataSource(
     private val articleDAO: ArticleDAO
 ) : ArticleDataSource<ArticleLocal> {
 
-    override suspend fun fetchTopHeadlines(topHeadlinesParams: TopHeadlinesParams): LiveData<List<ArticleLocal>> =
+    override suspend fun fetchMoreTopHeadlines(
+        topHeadlinesParams: TopHeadlinesParams
+    ): List<ArticleLocal> =
         throw UnsupportedOperationException()
 
-    override suspend fun getAvailableTopHeadlines(): LiveData<List<ArticleLocal>> =
-        Transformations.map(articleDAO.queryAll()) { articles ->
-            articles.map { article -> article }
-        }
+    override suspend fun getAvailableTopHeadlines(): DataSource.Factory<Int, ArticleLocal> =
+        articleDAO.queryAll()
 
-    override suspend fun save(article: ArticleLocal) = articleDAO.save(article)
+    override suspend fun save(articles: List<ArticleLocal>) = articleDAO.save(articles)
+
+    override suspend fun count(): Int = articleDAO.count()
 
 }

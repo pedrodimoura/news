@@ -2,10 +2,11 @@ package com.github.pedrodimoura.news.articles.di
 
 import com.github.pedrodimoura.news.articles.data.datasource.local.impl.ArticleLocalDataSource
 import com.github.pedrodimoura.news.articles.data.datasource.remote.ArticleService
+import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.ArticleRemoteBoundaryCallback
 import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.ArticleRemoteDataSource
 import com.github.pedrodimoura.news.articles.data.repository.ArticleRepositoryImpl
 import com.github.pedrodimoura.news.articles.domain.repository.ArticleRepository
-import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCase
+import com.github.pedrodimoura.news.articles.domain.usecase.AddNewArticleImpl
 import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCaseImpl
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleItemDecoration
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleListAdapter
@@ -20,6 +21,9 @@ import retrofit2.Retrofit
 
 const val KOIN_ARTICLE_LOCAL_DATA_SOURCE_NAME = "articleLocalDataSource"
 const val KOIN_ARTICLE_REMOTE_DATA_SOURCE_NAME = "articleRemoteDataSource"
+const val KOIN_FETCH_ARTICLES_NAME = "fetchArticles"
+const val KOIN_ADD_NEW_ARTICLE_NAME = "addNewArticle"
+const val KOIN_ARTICLE_REMOTE_BOUNDARY = "articleRemoteBoundary"
 
 val articleModule = module {
     single { get<Retrofit>().create(ArticleService::class.java) }
@@ -33,16 +37,25 @@ val articleModule = module {
         )
     }
 
-    factory<FetchTopHeadlinesUseCase> { FetchTopHeadlinesUseCaseImpl(articleRepository = get()) }
+    single(named(KOIN_ARTICLE_REMOTE_BOUNDARY)) { ArticleRemoteBoundaryCallback(articleRepository = get()) }
+
+    factory(named(KOIN_FETCH_ARTICLES_NAME)) {
+        FetchTopHeadlinesUseCaseImpl(
+            articleRepository = get(),
+            networkBoundaryCallback = get(named(KOIN_ARTICLE_REMOTE_BOUNDARY))
+        )
+    }
+    factory(named(KOIN_ADD_NEW_ARTICLE_NAME)) { AddNewArticleImpl(articleRepository = get()) }
     viewModel {
         ArticleViewModel(
-            fetchTopHeadlinesUseCase = get(),
+            fetchTopHeadlinesUseCase = get(named(KOIN_FETCH_ARTICLES_NAME)),
             threadContextProvider = get()
         )
     }
 
+    single { ArticleListAdapter() }
+
     scope(named<MainActivity>()) {
-        scoped { ArticleListAdapter() }
         scoped { (totalColumns: Int, margin: Float) ->
             ArticleItemDecoration(totalColumns, margin.toInt())
         }

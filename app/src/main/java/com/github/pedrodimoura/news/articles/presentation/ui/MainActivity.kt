@@ -1,20 +1,20 @@
 package com.github.pedrodimoura.news.articles.presentation.ui
 
 import android.os.Bundle
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.pedrodimoura.news.R
-import com.github.pedrodimoura.news.articles.domain.entity.Article
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleItemDecoration
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleListAdapter
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSizeLookup
 import com.github.pedrodimoura.news.articles.presentation.viewmodel.ArticleViewModel
 import com.github.pedrodimoura.news.common.presentation.ui.BaseActivity
 import com.github.pedrodimoura.news.common.presentation.viewmodel.FlowState
+import com.github.pedrodimoura.news.common.util.observe
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.scope.currentScope
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
@@ -28,7 +28,7 @@ class MainActivity : BaseActivity() {
         resources.getDimension(R.dimen.article_item_margin)
     }
 
-    private val articleListAdapter: ArticleListAdapter by currentScope.inject()
+    private val articleListAdapter: ArticleListAdapter by inject()
     private val articleItemDecoration: ArticleItemDecoration by currentScope.inject {
         parametersOf(articleRecyclerViewColumnsCount, articleItemMargin)
     }
@@ -36,16 +36,24 @@ class MainActivity : BaseActivity() {
         parametersOf(articleRecyclerViewColumnsCount)
     }
 
-    private val articleViewModel: ArticleViewModel by inject()
+    private val articleViewModel: ArticleViewModel by viewModel()
 
-    private var currentArticles: List<Article> = ArrayList()
+    private var forceReload = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setSupportActionBar(toolbar)
+        setupSwipeRefreshLayout()
         setupRecyclerView()
         observeTopHeadlines()
-        fetchTopHeadlines(savedInstanceState)
+        fetchTopHeadlines()
+    }
+
+    private fun setupSwipeRefreshLayout() {
+        articleSwipeRefreshLayout.setOnRefreshListener {
+            showSwipeRefresh(true)
+            articleViewModel.fetch("de", 21)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -60,42 +68,46 @@ class MainActivity : BaseActivity() {
     }
 
     private fun observeTopHeadlines() {
-        articleViewModel.observeTopHeadlines().observe(this, Observer {
-            when (it) {
-                is FlowState.Loading -> Timber.d("Loading")
-                is FlowState.Success -> {
-                    Timber.d("Success")
-                    it.data?.let { articleTopHeadlines ->
-                        articleTopHeadlines.observe(this, Observer { articles ->
-                            isContentAlreadyLoaded = true
-                            currentArticles = articles
-                            articleListAdapter.submitList(articles)
-                        })
+        observe(articleViewModel.observeTopHeadlines()) { flowState ->
+            when (flowState) {
+                is FlowState.Loading    -> {}
+                is FlowState.Success    -> {
+                    flowState.data?.let {
+                        log("Success!")
+                        observe(flowState.data) { pagedList ->
+                            log("Notified!")
+                            articleListAdapter.submitList(pagedList)
+                        }
                     } ?: handleSuccessWithNoData()
                 }
-                is FlowState.Error -> Timber.d("Error ${it.throwable}")
-                is FlowState.Done -> Timber.d("Done")
+                is FlowState.Error      -> {}
+                is FlowState.Done       -> {}
             }
-        })
-    }
+        }
 
-    private fun fetchTopHeadlines(savedInstanceState: Bundle?) {
-        if (!isContentAlreadyLoaded) {
-            articleViewModel.fetch()
-        } else {
-            currentArticles =
-                savedInstanceState?.getParcelableArrayList(CONTENT_BUNDLE_KEY) ?: currentArticles
-            articleListAdapter.submitList(currentArticles)
+        observe(articleViewModel.flowStateNothing) {
+            when (it) {
+                is FlowState.Success -> {
+                    log("added")
+                }
+            }
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        saveContentLoaded(currentArticles as ArrayList<Article>, outState)
+    private fun showSwipeRefresh(show: Boolean) {
+        forceReload = show
+        articleSwipeRefreshLayout.isRefreshing = show
+    }
+
+    private fun fetchTopHeadlines() {
+        articleViewModel.fetch("de", 21)
     }
 
     private fun handleSuccessWithNoData() {
         Timber.d("Success without data")
     }
+
+    private fun log(message: String) =
+        Timber.tag("boundaryCallback").d(message)
 
 }
