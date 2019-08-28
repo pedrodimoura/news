@@ -13,4 +13,6 @@ interface ArticleDataSource<T> : DataSource {
 
     suspend fun count(): Int
 
+    suspend fun deleteAll()
+
 }

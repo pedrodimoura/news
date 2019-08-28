@@ -1,10 +1,17 @@
 package com.github.pedrodimoura.news.common.data.datasource.remote
 
 import androidx.paging.PagedList
+import com.github.pedrodimoura.news.common.presentation.viewmodel.ThreadContextProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 
-abstract class RemoteBoundary<Input, Output> : PagedList.BoundaryCallback<Output>() {
+abstract class RemoteBoundary<Input, Output>(protected val threadContextProvider: ThreadContextProvider) :
+    PagedList.BoundaryCallback<Output>() {
 
-    // TODO: Add Coroutine Scope here
+    private val job: Job by lazy { Job() }
+    protected val coroutineScope: CoroutineScope by lazy {
+        CoroutineScope(threadContextProvider.io + job)
+    }
 
     protected var currentPage = 1
     protected var isExecutingTask = false

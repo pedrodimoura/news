@@ -19,4 +19,7 @@ interface ArticleDAO {
     @Query("SELECT count(*) FROM article")
     suspend fun count(): Int
 
+    @Query("DELETE FROM article")
+    suspend fun deleteAll()
+
 }

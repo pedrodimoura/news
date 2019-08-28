@@ -21,7 +21,7 @@ abstract class BaseViewModel(protected val threadContextProvider: ThreadContextP
         return withContext(threadContextProvider.io) { execution() }
     }
 
-    protected inline fun <reified T> executeFlow(
+    protected inline fun <T> executeFlow(
         liveData: MutableLiveData<FlowState<T>>,
         crossinline execution: suspend CoroutineScope.() -> FlowState<T>
     ) {
@@ -34,6 +34,13 @@ abstract class BaseViewModel(protected val threadContextProvider: ThreadContextP
             }
         }
     }
+
+    protected inline fun executeNonFlow(crossinline execution: suspend CoroutineScope.() -> Unit) {
+        launchUI {
+            withContextIO { execution() }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         job.cancel()

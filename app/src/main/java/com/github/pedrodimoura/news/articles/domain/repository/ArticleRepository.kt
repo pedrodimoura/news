@@ -14,4 +14,6 @@ interface ArticleRepository {
 
     suspend fun count(): Int
 
+    suspend fun clearArticles()
+
 }

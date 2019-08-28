@@ -1,4 +1,11 @@
 <resources>
+
+    <string-array name="countries">
+        <item>de</item>
+        <item>br</item>
+    </string-array>
+
     <string name="app_name">News</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_countries">Countries</string>
+
 </resources>
