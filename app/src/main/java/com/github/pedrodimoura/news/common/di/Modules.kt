@@ -15,7 +15,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import timber.log.Timber
-import java.util.Date
+import java.util.*
 
 const val BASE_URL = "https://newsapi.org/v2/"
 const val API_KEY_NAME = "apiKey"

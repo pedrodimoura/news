@@ -3,9 +3,11 @@ package com.github.pedrodimoura.news.articles.presentation.adapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.github.pedrodimoura.news.R
 import com.github.pedrodimoura.news.articles.domain.entity.Article
 import com.github.pedrodimoura.news.common.util.inflate
@@ -22,12 +24,15 @@ class ArticleListAdapter :
 
         article?.let {
             holder.title.text = it.title
+            Glide.with(holder.itemView).load(it.urlToImage).into(holder.image)
+            holder.image.setImageResource(R.drawable.news_image)
         }
 
     }
 
     class ArticleViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.title
+        val image: AppCompatImageView = view.articleImageView
     }
 
     companion object {

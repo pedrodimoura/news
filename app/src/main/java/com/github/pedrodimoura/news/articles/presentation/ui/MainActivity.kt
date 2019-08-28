@@ -55,7 +55,7 @@ class MainActivity : BaseActivity() {
     private fun setupSwipeRefreshLayout() {
         articleSwipeRefreshLayout.setOnRefreshListener {
             showSwipeRefresh(true)
-            fetchTopHeadlines()
+            fetchTopHeadlines(true)
         }
     }
 
@@ -94,7 +94,7 @@ class MainActivity : BaseActivity() {
         if (invalidatingDataSource)
             invalidateDataSource()
 
-        articleViewModel.fetch(DEFAULT_COUNTRY, DEFAULT_PAGE_SIZE)
+        articleViewModel.fetch(DEFAULT_COUNTRY, DEFAULT_PAGE_SIZE, invalidatingDataSource)
     }
 
     private fun invalidateDataSource() = articleViewModel.clearArticles()

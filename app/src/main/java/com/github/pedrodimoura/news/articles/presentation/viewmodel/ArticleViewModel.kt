@@ -20,9 +20,16 @@ class ArticleViewModel(
 
     private val flowState = MutableLiveData<FlowState<LiveData<PagedList<Article>>>>()
 
-    override fun fetch(country: String, pageSize: Int) = executeFlow(flowState) {
-        fetchTopHeadlinesUseCase.execute(TopHeadlinesParams(country, pageSize = pageSize))
-    }
+    override fun fetch(country: String, pageSize: Int, invalidatingSource: Boolean) =
+        executeFlow(flowState) {
+            fetchTopHeadlinesUseCase.execute(
+                TopHeadlinesParams(
+                    country,
+                    pageSize = pageSize,
+                    invalidatingSource = invalidatingSource
+                )
+            )
+        }
 
     override fun observeTopHeadlines(): LiveData<FlowState<LiveData<PagedList<Article>>>> =
         flowState

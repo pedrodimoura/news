@@ -23,6 +23,11 @@ class ArticleRemoteBoundaryCallback(
         isExecutingTask = true
         coroutineScope.launch(threadContextProvider.io) {
             try {
+                if (params?.invalidatingSource!!) {
+                    currentPage = 1
+                    params?.invalidatingSource = false
+                }
+
                 params?.page = currentPage
                 val articles = articleRepository.fetchTopHeadlines(params!!)
                 articleRepository.save(articles)
