@@ -23,6 +23,11 @@
                     android:layout_height="match_parent"
                     tools:listitem="@layout/item_article" />
 
+            <include
+                    android:id="@+id/emptyView"
+                    android:visibility="gone"
+                    layout="@layout/empty_view" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

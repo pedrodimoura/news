@@ -9,6 +9,7 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.github.pedrodimoura.news.R
 import com.github.pedrodimoura.news.articles.domain.entity.Article
@@ -37,9 +38,6 @@ class ArticleListAdapter :
                 holder.description.text = it.description
             }
 
-//            holder.description.text =
-//                if (position.isMultiplyOf(7)) it.content else it.description
-
             holder.source.text =
                 holder.itemView.context.getString(R.string.from_source, it.source.name)
 
@@ -47,6 +45,7 @@ class ArticleListAdapter :
                 .load(it.urlToImage)
                 .placeholder(R.drawable.ic_newspaper_24dp)
                 .error(R.drawable.ic_newspaper_24dp)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .transition(DrawableTransitionOptions.withCrossFade(200))
                 .into(holder.image)
 
