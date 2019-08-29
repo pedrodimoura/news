@@ -1,6 +1,7 @@
 package com.github.pedrodimoura.news.articles.presentation.ui
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.pedrodimoura.news.R
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleItemDecoration
@@ -21,6 +22,8 @@ import timber.log.Timber
 class MainActivity : BaseActivity() {
 
     override val layoutResId: Int = R.layout.activity_main
+    override val menuRes: Int = R.menu.menu_main
+
     private val articleRecyclerViewColumnsCount: Int by lazy {
         resources.getInteger(R.integer.article_recycler_view_columns_count)
     }
@@ -52,7 +55,7 @@ class MainActivity : BaseActivity() {
     private fun setupSwipeRefreshLayout() {
         articleSwipeRefreshLayout.setOnRefreshListener {
             showSwipeRefresh(true)
-            articleViewModel.fetch("de", 21)
+            fetchTopHeadlines(true)
         }
     }
 
@@ -70,26 +73,17 @@ class MainActivity : BaseActivity() {
     private fun observeTopHeadlines() {
         observe(articleViewModel.observeTopHeadlines()) { flowState ->
             when (flowState) {
-                is FlowState.Loading    -> {}
-                is FlowState.Success    -> {
+                is FlowState.Loading -> showSwipeRefresh(true)
+                is FlowState.Success -> {
                     flowState.data?.let {
-                        log("Success!")
-                        observe(flowState.data) { pagedList ->
-                            log("Notified!")
-                            articleListAdapter.submitList(pagedList)
+                        observe(flowState.data) {
+                            articleListAdapter.submitList(it)
                         }
                     } ?: handleSuccessWithNoData()
                 }
-                is FlowState.Error      -> {}
-                is FlowState.Done       -> {}
-            }
-        }
-
-        observe(articleViewModel.flowStateNothing) {
-            when (it) {
-                is FlowState.Success -> {
-                    log("added")
+                is FlowState.Error -> {
                 }
+                is FlowState.Done -> showSwipeRefresh(false)
             }
         }
     }
@@ -99,15 +93,32 @@ class MainActivity : BaseActivity() {
         articleSwipeRefreshLayout.isRefreshing = show
     }
 
-    private fun fetchTopHeadlines() {
-        articleViewModel.fetch("de", 21)
+    private fun fetchTopHeadlines(invalidatingDataSource: Boolean = false) {
+        if (invalidatingDataSource)
+            invalidateDataSource()
+
+        articleViewModel.fetch(DEFAULT_COUNTRY, DEFAULT_PAGE_SIZE, invalidatingDataSource)
     }
+
+    private fun invalidateDataSource() = articleViewModel.clearArticles()
 
     private fun handleSuccessWithNoData() {
         Timber.d("Success without data")
     }
 
-    private fun log(message: String) =
-        Timber.tag("boundaryCallback").d(message)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_countries -> {
+                val c = CountriesBottomSheetDialogFragment()
+                c.showNow(supportFragmentManager, CountriesBottomSheetDialogFragment.TAG)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    companion object {
+        private const val DEFAULT_COUNTRY = "br"
+        private const val DEFAULT_PAGE_SIZE = 21
+    }
 
 }

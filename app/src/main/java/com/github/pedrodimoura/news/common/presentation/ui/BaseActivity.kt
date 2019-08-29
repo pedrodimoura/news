@@ -1,8 +1,9 @@
 package com.github.pedrodimoura.news.common.presentation.ui
 
 import android.os.Bundle
-import android.os.Parcelable
+import android.view.Menu
 import androidx.annotation.LayoutRes
+import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
 
 abstract class BaseActivity : AppCompatActivity() {
@@ -10,18 +11,17 @@ abstract class BaseActivity : AppCompatActivity() {
     @get:LayoutRes
     protected abstract val layoutResId: Int
 
-    protected var isContentAlreadyLoaded: Boolean = false
+    @get:MenuRes
+    protected abstract val menuRes: Int
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutResId)
-        isContentAlreadyLoaded =
-            savedInstanceState?.getBoolean(IS_CONTENT_ALREADY_LOADED_BUNDLE_KEY) ?: false
     }
 
-    protected fun saveContentLoaded(any: ArrayList<out Parcelable>, outState: Bundle) {
-        outState.putBoolean(IS_CONTENT_ALREADY_LOADED_BUNDLE_KEY, isContentAlreadyLoaded)
-        outState.putParcelableArrayList(CONTENT_BUNDLE_KEY, any)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(menuRes, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     companion object {

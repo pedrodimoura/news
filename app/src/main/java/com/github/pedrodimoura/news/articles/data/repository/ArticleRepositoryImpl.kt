@@ -26,4 +26,6 @@ class ArticleRepositoryImpl(
 
     override suspend fun count(): Int = articleLocalDataSource.count()
 
+    override suspend fun clearArticles() = articleLocalDataSource.deleteAll()
+
 }

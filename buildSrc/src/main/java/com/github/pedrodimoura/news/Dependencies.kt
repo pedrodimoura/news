@@ -27,13 +27,15 @@ object Dependencies {
         Libraries.moshiKotlin,
         Libraries.roomRuntime,
         Libraries.roomExtensions,
-        Libraries.paging
+        Libraries.paging,
+        Libraries.glide
     )
 
     @JvmStatic
     val appKapt = arrayListOf(
         Libraries.lifecycleCompiler,
-        Libraries.roomCompiler
+        Libraries.roomCompiler,
+        Libraries.glideCompiler
     )
 
     @JvmStatic
@@ -75,6 +77,7 @@ private object Versions {
     const val moshi = "1.8.0"
     const val room = "2.2.0-beta01"
     const val paging = "2.1.0"
+    const val glide = "4.9.0"
 }
 
 private object Libraries {
@@ -106,6 +109,8 @@ private object Libraries {
     const val roomExtensions = "androidx.room:room-ktx:${Versions.room}"
     const val roomTesting = "androidx.room:room-testing:${Versions.room}"
     const val paging = "androidx.paging:paging-runtime:${Versions.paging}"
+    const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
+    const val glideCompiler = "com.github.bumptech.glide:compiler:${Versions.glide}"
 
     const val koinTest = "org.koin:koin-test:${Versions.koin}"
     const val mockitoCore = "org.mockito:mockito-core:${Versions.mockito}"

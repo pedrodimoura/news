@@ -22,4 +22,6 @@ class ArticleLocalDataSource(
 
     override suspend fun count(): Int = articleDAO.count()
 
+    override suspend fun deleteAll() = articleDAO.deleteAll()
+
 }

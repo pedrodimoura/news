@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeightSmall">
+
+    <TextView
+            android:id="@+id/countryName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|start"
+            android:layout_marginStart="@dimen/article_item_margin"
+            android:layout_marginLeft="@dimen/article_item_margin"
+            android:drawableStart="@drawable/ic_check_black_24dp"
+            android:drawableLeft="@drawable/ic_check_black_24dp"
+            android:drawablePadding="@dimen/article_item_margin"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            tools:text="@tools:sample/cities" />
+
+
+</androidx.cardview.widget.CardView>

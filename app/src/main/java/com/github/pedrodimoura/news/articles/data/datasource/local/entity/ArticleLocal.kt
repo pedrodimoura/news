@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import java.util.Date
+import java.util.*
 
 @Entity(
     tableName = "article",
@@ -18,7 +18,7 @@ import java.util.Date
 data class ArticleLocal(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    @Embedded(prefix = "source")
+    @Embedded
     val sourceLocal: SourceLocal = SourceLocal(),
     val author: String = "",
     val title: String = "",

@@ -7,6 +7,7 @@ import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.Article
 import com.github.pedrodimoura.news.articles.data.repository.ArticleRepositoryImpl
 import com.github.pedrodimoura.news.articles.domain.repository.ArticleRepository
 import com.github.pedrodimoura.news.articles.domain.usecase.AddNewArticleImpl
+import com.github.pedrodimoura.news.articles.domain.usecase.ClearArticlesUseCaseImpl
 import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCaseImpl
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleItemDecoration
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleListAdapter
@@ -22,6 +23,7 @@ import retrofit2.Retrofit
 const val KOIN_ARTICLE_LOCAL_DATA_SOURCE_NAME = "articleLocalDataSource"
 const val KOIN_ARTICLE_REMOTE_DATA_SOURCE_NAME = "articleRemoteDataSource"
 const val KOIN_FETCH_ARTICLES_NAME = "fetchArticles"
+const val KOIN_CLEAR_ARTICLES_NAME = "fetchClear"
 const val KOIN_ADD_NEW_ARTICLE_NAME = "addNewArticle"
 const val KOIN_ARTICLE_REMOTE_BOUNDARY = "articleRemoteBoundary"
 
@@ -37,7 +39,12 @@ val articleModule = module {
         )
     }
 
-    single(named(KOIN_ARTICLE_REMOTE_BOUNDARY)) { ArticleRemoteBoundaryCallback(articleRepository = get()) }
+    single(named(KOIN_ARTICLE_REMOTE_BOUNDARY)) {
+        ArticleRemoteBoundaryCallback(
+            articleRepository = get(),
+            threadContextProvider = get()
+        )
+    }
 
     factory(named(KOIN_FETCH_ARTICLES_NAME)) {
         FetchTopHeadlinesUseCaseImpl(
@@ -46,9 +53,11 @@ val articleModule = module {
         )
     }
     factory(named(KOIN_ADD_NEW_ARTICLE_NAME)) { AddNewArticleImpl(articleRepository = get()) }
+    factory(named(KOIN_CLEAR_ARTICLES_NAME)) { ClearArticlesUseCaseImpl(articleRepository = get()) }
     viewModel {
         ArticleViewModel(
             fetchTopHeadlinesUseCase = get(named(KOIN_FETCH_ARTICLES_NAME)),
+            clearArticlesUseCase = get(named(KOIN_CLEAR_ARTICLES_NAME)),
             threadContextProvider = get()
         )
     }

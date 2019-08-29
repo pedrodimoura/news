@@ -18,7 +18,14 @@ class News : Application() {
 
         startKoin {
             androidContext(applicationContext)
-            modules(arrayListOf(asyncModule, localModule, networkModule, articleModule))
+            modules(
+                arrayListOf(
+                    asyncModule,
+                    localModule,
+                    networkModule,
+                    articleModule
+                )
+            )
         }
     }
 

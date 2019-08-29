@@ -30,4 +30,7 @@ class ArticleRemoteDataSource(
     override suspend fun count(): Int =
         throw UnsupportedOperationException()
 
+    override suspend fun deleteAll() =
+        throw UnsupportedOperationException()
+
 }

@@ -1,21 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        style="@style/Widget.MaterialComponents.CardView"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true"
         android:foreground="?selectableItemBackground"
-        style="@style/Widget.MaterialComponents.CardView">
+        app:cardCornerRadius="5dp"
+        app:cardPreventCornerOverlap="true">
 
-    <TextView
-            android:id="@+id/title"
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/app_name"
-            android:maxLength="10"
-            android:maxLines="1"
-            android:ellipsize="end"/>
+            android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/articleImageView"
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:background="@color/backgroundArticleImage"
+                android:scaleType="centerCrop" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayoutArticleContent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/article_content_padding">
+
+            <TextView
+                    android:id="@+id/title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/article_item_content_margin"
+                    android:layout_marginRight="@dimen/article_item_content_margin"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-light"
+                    android:maxLines="1"
+                    android:textColor="#FF000000"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/publishedAt"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Title" />
+
+            <TextView
+                    android:id="@+id/publishedAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/article_item_content_margin"
+                    android:layout_marginLeft="@dimen/article_item_content_margin"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-light"
+                    android:maxLength="10"
+                    android:maxLines="1"
+                    android:textColor="#FF000000"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/title"
+                    tools:text="@tools:sample/date/ddmmyy" />
+
+            <TextView
+                    android:id="@+id/description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/article_item_content_margin"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-light"
+                    android:maxLines="1"
+                    android:textColor="#FF000000"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/title"
+                    tools:text="@tools:sample/lorem/random" />
+
+            <TextView
+                    android:id="@+id/source"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-light"
+                    android:maxLines="1"
+                    android:textColor="#756060"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/description"
+                    tools:text="@tools:sample/first_names" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>
