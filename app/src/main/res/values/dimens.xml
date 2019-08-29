@@ -1,4 +1,6 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="article_item_margin">12dp</dimen>
+    <dimen name="article_item_margin">8dp</dimen>
+    <dimen name="article_item_content_margin">4dp</dimen>
+    <dimen name="article_content_padding">8dp</dimen>
 </resources>

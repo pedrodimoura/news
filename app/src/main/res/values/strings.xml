@@ -8,4 +8,6 @@
     <string name="app_name">News</string>
     <string name="action_countries">Countries</string>
 
+    <string name="from_source">From: %s</string>
+
 </resources>

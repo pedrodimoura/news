@@ -73,14 +73,17 @@ class MainActivity : BaseActivity() {
     private fun observeTopHeadlines() {
         observe(articleViewModel.observeTopHeadlines()) { flowState ->
             when (flowState) {
-                is FlowState.Loading    -> showSwipeRefresh(true)
-                is FlowState.Success    -> {
+                is FlowState.Loading -> showSwipeRefresh(true)
+                is FlowState.Success -> {
                     flowState.data?.let {
-                        observe(flowState.data) { articleListAdapter.submitList(it) }
+                        observe(flowState.data) {
+                            articleListAdapter.submitList(it)
+                        }
                     } ?: handleSuccessWithNoData()
                 }
-                is FlowState.Error      -> {}
-                is FlowState.Done       -> showSwipeRefresh(false)
+                is FlowState.Error -> {
+                }
+                is FlowState.Done -> showSwipeRefresh(false)
             }
         }
     }
@@ -114,7 +117,7 @@ class MainActivity : BaseActivity() {
     }
 
     companion object {
-        private const val DEFAULT_COUNTRY = "de"
+        private const val DEFAULT_COUNTRY = "br"
         private const val DEFAULT_PAGE_SIZE = 21
     }
 
