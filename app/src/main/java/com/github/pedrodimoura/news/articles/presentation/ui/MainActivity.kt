@@ -2,12 +2,17 @@ package com.github.pedrodimoura.news.articles.presentation.ui
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.pedrodimoura.news.R
+import com.github.pedrodimoura.news.articles.domain.entity.Article
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleItemDecoration
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleListAdapter
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSizeLookup
 import com.github.pedrodimoura.news.articles.presentation.viewmodel.ArticleViewModel
+import com.github.pedrodimoura.news.common.data.datasource.remote.NetworkCallState
 import com.github.pedrodimoura.news.common.presentation.ui.BaseActivity
 import com.github.pedrodimoura.news.common.presentation.viewmodel.FlowState
 import com.github.pedrodimoura.news.common.util.observe
@@ -53,9 +58,12 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupSwipeRefreshLayout() {
-        articleSwipeRefreshLayout.setOnRefreshListener {
-            showSwipeRefresh(true)
-            fetchTopHeadlines(true)
+        articleSwipeRefreshLayout.apply {
+            setOnRefreshListener {
+                fetchTopHeadlines(true)
+                changeEmptyViewVisibility(false)
+            }
+            setColorSchemeColors(ContextCompat.getColor(context, R.color.colorPrimary))
         }
     }
 
@@ -73,17 +81,26 @@ class MainActivity : BaseActivity() {
     private fun observeTopHeadlines() {
         observe(articleViewModel.observeTopHeadlines()) { flowState ->
             when (flowState) {
-                is FlowState.Loading -> showSwipeRefresh(true)
                 is FlowState.Success -> {
-                    flowState.data?.let {
-                        observe(flowState.data) {
+                    flowState.data?.let { topHeadlinesResult ->
+                        observe(topHeadlinesResult.pagedListArticles) {
                             articleListAdapter.submitList(it)
+                        }
+
+                        observe(topHeadlinesResult.networkCallState) { networkCallState ->
+                            when (networkCallState) {
+                                is NetworkCallState.Requesting -> {
+                                    changeEmptyViewVisibility(false)
+                                    showSwipeRefresh(true)
+                                }
+                                is NetworkCallState.Done -> {
+                                    showSwipeRefresh(false)
+                                }
+                                is NetworkCallState.Failed -> changeEmptyViewVisibility(true)
+                            }
                         }
                     } ?: handleSuccessWithNoData()
                 }
-                is FlowState.Error -> {
-                }
-                is FlowState.Done -> showSwipeRefresh(false)
             }
         }
     }
@@ -98,6 +115,14 @@ class MainActivity : BaseActivity() {
             invalidateDataSource()
 
         articleViewModel.fetch(DEFAULT_COUNTRY, DEFAULT_PAGE_SIZE, invalidatingDataSource)
+    }
+
+    private fun showEmptyView(pagedListAdapter: PagedList<Article>) =
+        changeEmptyViewVisibility(pagedListAdapter.isEmpty())
+
+    private fun changeEmptyViewVisibility(visible: Boolean) {
+        articleRecyclerView.visibility = if (visible) View.GONE else View.VISIBLE
+        emptyView.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
     private fun invalidateDataSource() = articleViewModel.clearArticles()
@@ -117,7 +142,7 @@ class MainActivity : BaseActivity() {
     }
 
     companion object {
-        private const val DEFAULT_COUNTRY = "br"
+        private const val DEFAULT_COUNTRY = "de"
         private const val DEFAULT_PAGE_SIZE = 21
     }
 

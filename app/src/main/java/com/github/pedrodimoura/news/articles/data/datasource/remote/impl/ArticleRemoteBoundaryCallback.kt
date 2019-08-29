@@ -6,8 +6,7 @@ import com.github.pedrodimoura.news.articles.domain.repository.ArticleRepository
 import com.github.pedrodimoura.news.common.data.datasource.remote.RemoteBoundary
 import com.github.pedrodimoura.news.common.presentation.viewmodel.ThreadContextProvider
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import timber.log.Timber
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 class ArticleRemoteBoundaryCallback(
@@ -18,33 +17,47 @@ class ArticleRemoteBoundaryCallback(
     override var params: TopHeadlinesParams? = null
 
     override fun fetchAndSave() {
-        if (isExecutingTask)
+        if (super.isRequesting())
             return
-        isExecutingTask = true
-        coroutineScope.launch(threadContextProvider.io) {
+
+        coroutineScope.launch(threadContextProvider.ui) {
+
             try {
+                super.start()
+
                 if (params?.invalidatingSource!!) {
                     currentPage = 1
                     params?.invalidatingSource = false
                 }
 
                 params?.page = currentPage
-                val articles = articleRepository.fetchTopHeadlines(params!!)
-                articleRepository.save(articles)
-                currentPage++
-                isExecutingTask = false
+
+                withContext(threadContextProvider.io) {
+                    val articles = articleRepository.fetchTopHeadlines(params!!)
+                    articleRepository.save(articles)
+                    currentPage++
+                }
+
+                super.success()
             } catch (e: Exception) {
-                Timber.tag("boundaryCallback").d("$e")
+                super.failure(e)
+            } finally {
+                super.done()
             }
+
         }
     }
 
     override fun updateCurrentPageWithLastPageLoaded() {
-        coroutineScope.launch(threadContextProvider.io) {
-            val rowCount = articleRepository.count()
-            val pagesAvailable = (rowCount.toFloat() / params?.pageSize!!).roundToInt()
-            currentPage = pagesAvailable
-            currentPage++
+        coroutineScope.launch(threadContextProvider.ui) {
+            super.isRequesting()
+            withContext(threadContextProvider.io) {
+                val rowCount = articleRepository.count()
+                val pagesAvailable = (rowCount.toFloat() / params?.pageSize!!).roundToInt()
+                currentPage = pagesAvailable
+                currentPage++
+            }
+            super.done()
         }
     }
 }

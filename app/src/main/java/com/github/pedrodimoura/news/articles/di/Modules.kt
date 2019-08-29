@@ -1,5 +1,9 @@
 package com.github.pedrodimoura.news.articles.di
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import com.github.pedrodimoura.news.articles.data.datasource.local.impl.ArticleLocalDataSource
 import com.github.pedrodimoura.news.articles.data.datasource.remote.ArticleService
 import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.ArticleRemoteBoundaryCallback
@@ -15,6 +19,9 @@ import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSiz
 import com.github.pedrodimoura.news.articles.presentation.ui.MainActivity
 import com.github.pedrodimoura.news.articles.presentation.viewmodel.ArticleViewModel
 import com.github.pedrodimoura.news.common.data.datasource.local.NewsRoomDatabase
+import com.github.pedrodimoura.news.common.presentation.lifecycle.NetworkCallback
+import com.github.pedrodimoura.news.common.presentation.lifecycle.NetworkLifecycleObserver
+import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -64,12 +71,27 @@ val articleModule = module {
 
     single { ArticleListAdapter() }
 
+    single {
+        androidApplication().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    }
+
+    single { NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build() }
+
     scope(named<MainActivity>()) {
         scoped { (totalColumns: Int, margin: Float) ->
             ArticleItemDecoration(totalColumns, margin.toInt())
         }
         scoped { (articleRecyclerViewColumnsCount: Int) ->
             ArticleSpanSizeLookup(articleRecyclerViewColumnsCount)
+        }
+
+        scoped { NetworkCallback() }
+        scoped {
+            NetworkLifecycleObserver(
+                connectivityManager = get(),
+                networkRequest = get(),
+                networkCallback = get()
+            )
         }
     }
 
