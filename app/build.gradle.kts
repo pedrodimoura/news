@@ -1,5 +1,6 @@
-import com.github.pedrodimoura.news.Libraries
+import com.github.pedrodimoura.news.Dependencies
 import com.github.pedrodimoura.news.config.AppConfiguration
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.android.application")
@@ -27,11 +28,23 @@ android {
                 getDefaultProguardFile(AppConfiguration.proguardAndroidOptimize), AppConfiguration.proguardRules)
         }
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
 }
 
 dependencies {
-    Libraries.app.forEach { implementation(it) }
-    Libraries.appKapt.forEach { kapt(it) }
-    Libraries.test.forEach { testImplementation(it) }
-    Libraries.instrumented.forEach { androidTestImplementation(it) }
+    Dependencies.app.forEach { implementation(it) }
+    Dependencies.appKapt.forEach { kapt(it) }
+    Dependencies.test.forEach { testImplementation(it) }
+    Dependencies.instrumented.forEach { androidTestImplementation(it) }
 }

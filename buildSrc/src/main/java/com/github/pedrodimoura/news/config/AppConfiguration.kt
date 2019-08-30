@@ -4,7 +4,7 @@ object AppConfiguration {
     var compileSdkVersion = 29
     var buildToolsVersion = "29.0.0"
     var applicationId = "com.github.pedrodimoura.news"
-    var minSdkVersion = 14
+    var minSdkVersion = 21
     var targetSdkVersion = 29
     var versionCode = 1
     var versionName = "1.0"
