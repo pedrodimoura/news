@@ -91,9 +91,7 @@ val networkModule = module {
 
     single { NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build() }
 
-    single {
-        NetworkCallback()
-    }
+    single { NetworkCallback() }
 
     single {
         NetworkLifecycleObserver(

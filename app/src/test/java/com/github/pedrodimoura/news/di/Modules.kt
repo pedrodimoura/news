@@ -6,7 +6,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.koin.dsl.module
 
 val testModule = module {
-    single<ThreadContextProvider> { TestThreadContextProvider() }
+    single<ThreadContextProvider>(override = true) { TestThreadContextProvider() }
 }
 
 val testModuleNetwork = module {

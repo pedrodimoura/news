@@ -13,6 +13,7 @@ import com.github.pedrodimoura.news.articles.domain.entity.Article
 import com.github.pedrodimoura.news.articles.domain.repository.ArticleRepository
 import com.github.pedrodimoura.news.articles.domain.usecase.AddNewArticleImpl
 import com.github.pedrodimoura.news.articles.domain.usecase.ClearArticlesUseCaseImpl
+import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCase
 import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCaseImpl
 import com.github.pedrodimoura.news.articles.presentation.ArticleInteractor
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleItemDecoration
@@ -57,7 +58,7 @@ val articleModule = module {
         )
     }
 
-    factory(named(KOIN_FETCH_ARTICLES_NAME)) {
+    single(named(KOIN_FETCH_ARTICLES_NAME)) {
         FetchTopHeadlinesUseCaseImpl(
             articleRepository = get(),
             networkBoundaryCallback = get(named(KOIN_ARTICLE_REMOTE_BOUNDARY))

@@ -2,7 +2,6 @@ package com.github.pedrodimoura.news.articles.presentation.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -138,16 +137,6 @@ class MainActivity : BaseActivity(), ArticleInteractor.View,
         Toast
             .makeText(this@MainActivity, R.string.default_error_message, Toast.LENGTH_SHORT)
             .show()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_countries -> {
-                val c = CountriesBottomSheetDialogFragment()
-                c.showNow(supportFragmentManager, CountriesBottomSheetDialogFragment.TAG)
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onItemAdapterClick(t: ArticleView) {
