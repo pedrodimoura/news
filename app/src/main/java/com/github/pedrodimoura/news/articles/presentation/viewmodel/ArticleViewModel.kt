@@ -21,13 +21,14 @@ class ArticleViewModel(
 
     override fun fetch(country: String, pageSize: Int, invalidatingSource: Boolean) =
         executeFlow(flowState) {
-            fetchTopHeadlinesUseCase.execute(
+            val r = fetchTopHeadlinesUseCase.execute(
                 TopHeadlinesParams(
                     country,
                     pageSize = pageSize,
                     invalidatingSource = invalidatingSource
                 )
             )
+            r
         }
 
     override fun observeTopHeadlines(): LiveData<FlowState<TopHeadlinesResult>> =

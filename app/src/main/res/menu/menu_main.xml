@@ -1,11 +1,2 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context="com.github.pedrodimoura.news.articles.presentation.ui.MainActivity">
-    <item
-            android:id="@+id/action_countries"
-            android:orderInCategory="100"
-            android:icon="@drawable/ic_language_white_24dp"
-            android:title="@string/action_countries"
-            app:showAsAction="always" />
-</menu>
+<menu xmlns:tools="http://schemas.android.com/tools"
+        tools:context="com.github.pedrodimoura.news.articles.presentation.ui.MainActivity" />

@@ -15,10 +15,12 @@ class NetworkLifecycleObserver(
 
     val isConnected: LiveData<ConnectionStatus> = networkCallback.isConnected()
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart() = connectivityManager.requestNetwork(networkRequest, networkCallback)
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onDestroy() = connectivityManager.unregisterNetworkCallback(networkCallback)
+    fun onDestroy() = try {
+        connectivityManager.unregisterNetworkCallback(networkCallback)
+    } catch (e: Exception) {}
 
 }
