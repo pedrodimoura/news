@@ -7,7 +7,12 @@ import com.github.pedrodimoura.news.common.presentation.viewmodel.FlowState
 interface ArticleInteractor {
 
     interface View {
-        fun fetch()
+        fun fetchTopHeadlines(invalidatingDataSource: Boolean = false)
+        fun setupView()
+
+        interface AdapterCallback<T> {
+            fun onItemAdapterClick(t: T)
+        }
     }
 
     interface ViewModel {

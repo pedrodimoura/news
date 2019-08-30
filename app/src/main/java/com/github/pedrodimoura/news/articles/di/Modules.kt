@@ -9,13 +9,17 @@ import com.github.pedrodimoura.news.articles.data.datasource.remote.ArticleServi
 import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.ArticleRemoteBoundaryCallback
 import com.github.pedrodimoura.news.articles.data.datasource.remote.impl.ArticleRemoteDataSource
 import com.github.pedrodimoura.news.articles.data.repository.ArticleRepositoryImpl
+import com.github.pedrodimoura.news.articles.domain.entity.Article
 import com.github.pedrodimoura.news.articles.domain.repository.ArticleRepository
 import com.github.pedrodimoura.news.articles.domain.usecase.AddNewArticleImpl
 import com.github.pedrodimoura.news.articles.domain.usecase.ClearArticlesUseCaseImpl
 import com.github.pedrodimoura.news.articles.domain.usecase.FetchTopHeadlinesUseCaseImpl
+import com.github.pedrodimoura.news.articles.presentation.ArticleInteractor
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleItemDecoration
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleListAdapter
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSizeLookup
+import com.github.pedrodimoura.news.articles.presentation.entity.ArticleView
+import com.github.pedrodimoura.news.articles.presentation.ui.ArticleDetailsActivity
 import com.github.pedrodimoura.news.articles.presentation.ui.MainActivity
 import com.github.pedrodimoura.news.articles.presentation.viewmodel.ArticleViewModel
 import com.github.pedrodimoura.news.common.data.datasource.local.NewsRoomDatabase
@@ -69,13 +73,9 @@ val articleModule = module {
         )
     }
 
-    single { ArticleListAdapter() }
-
-    single {
-        androidApplication().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    single { (adapterCallback: ArticleInteractor.View.AdapterCallback<ArticleView>) ->
+        ArticleListAdapter(adapterCallback)
     }
-
-    single { NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build() }
 
     scope(named<MainActivity>()) {
         scoped { (totalColumns: Int, margin: Float) ->
@@ -83,15 +83,6 @@ val articleModule = module {
         }
         scoped { (articleRecyclerViewColumnsCount: Int) ->
             ArticleSpanSizeLookup(articleRecyclerViewColumnsCount)
-        }
-
-        scoped { NetworkCallback() }
-        scoped {
-            NetworkLifecycleObserver(
-                connectivityManager = get(),
-                networkRequest = get(),
-                networkCallback = get()
-            )
         }
     }
 

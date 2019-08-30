@@ -28,7 +28,8 @@ object Dependencies {
         Libraries.roomRuntime,
         Libraries.roomExtensions,
         Libraries.paging,
-        Libraries.glide
+        Libraries.glide,
+        Libraries.flexBoxLayout
     )
 
     @JvmStatic
@@ -78,6 +79,7 @@ private object Versions {
     const val room = "2.2.0-beta01"
     const val paging = "2.1.0"
     const val glide = "4.9.0"
+    const val flexBoxLayout = "1.1.0"
 }
 
 private object Libraries {
@@ -111,6 +113,7 @@ private object Libraries {
     const val paging = "androidx.paging:paging-runtime:${Versions.paging}"
     const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
     const val glideCompiler = "com.github.bumptech.glide:compiler:${Versions.glide}"
+    const val flexBoxLayout = "com.google.android:flexbox:${Versions.flexBoxLayout}"
 
     const val koinTest = "org.koin:koin-test:${Versions.koin}"
     const val mockitoCore = "org.mockito:mockito-core:${Versions.mockito}"

@@ -1,8 +1,14 @@
 package com.github.pedrodimoura.news.common.di
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import androidx.room.Room
 import com.github.pedrodimoura.news.common.data.converter.NullToEmptyStringAdapter
 import com.github.pedrodimoura.news.common.data.datasource.local.NewsRoomDatabase
+import com.github.pedrodimoura.news.common.presentation.lifecycle.NetworkCallback
+import com.github.pedrodimoura.news.common.presentation.lifecycle.NetworkLifecycleObserver
 import com.github.pedrodimoura.news.common.presentation.viewmodel.ThreadContextProvider
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
@@ -17,6 +23,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import timber.log.Timber
 import java.util.*
 
+const val PROPERTY_KEY_BASE_URL = "base_url_pk"
 const val BASE_URL = "https://newsapi.org/v2/"
 const val API_KEY_NAME = "apiKey"
 const val API_KEY_VALUE = "b89305d369ed4dafa1a20ca3de0afee0"
@@ -72,9 +79,28 @@ val networkModule = module {
     }
     single {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(getProperty(PROPERTY_KEY_BASE_URL, BASE_URL))
             .addConverterFactory(get<MoshiConverterFactory>())
             .client(get())
             .build()
     }
+
+    single {
+        androidApplication().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    }
+
+    single { NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build() }
+
+    single {
+        NetworkCallback()
+    }
+
+    single {
+        NetworkLifecycleObserver(
+            connectivityManager = get(),
+            networkRequest = get(),
+            networkCallback = get()
+        )
+    }
+
 }

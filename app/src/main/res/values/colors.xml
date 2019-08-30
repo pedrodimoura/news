@@ -6,4 +6,5 @@
     <color name="colorAccent">#aab6fe</color>
 
     <color name="backgroundArticleImage">#F0F0F0</color>
+    <color name="articleTitle">#FF000000</color>
 </resources>

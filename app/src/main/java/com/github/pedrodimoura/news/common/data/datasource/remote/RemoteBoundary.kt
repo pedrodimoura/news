@@ -42,7 +42,9 @@ abstract class RemoteBoundary<Input, Output>(protected val threadContextProvider
 
     fun start() {
         isExecutingTask = true
-        networkCallStateLiveData.value = NetworkCallState.Requesting
+
+        if (currentPage == 1)
+            networkCallStateLiveData.value = NetworkCallState.Requesting
     }
 
     fun isRequesting(): Boolean = isExecutingTask

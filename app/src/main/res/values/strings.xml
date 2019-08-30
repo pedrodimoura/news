@@ -9,5 +9,10 @@
     <string name="action_countries">Countries</string>
 
     <string name="from_source">From: %s</string>
+    <string name="default_error_message">Something went wrong</string>
+    <string name="device_network_disconnected">No Internet Connection</string>
+
+    <string name="article_details">Article Details</string>
+    <string name="go_to_article">Go To Article</string>
 
 </resources>

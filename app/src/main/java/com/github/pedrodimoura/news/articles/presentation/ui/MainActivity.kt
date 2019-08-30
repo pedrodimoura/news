@@ -1,16 +1,18 @@
 package com.github.pedrodimoura.news.articles.presentation.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.paging.PagedList
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.pedrodimoura.news.R
-import com.github.pedrodimoura.news.articles.domain.entity.Article
+import com.github.pedrodimoura.news.articles.presentation.ArticleInteractor
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleItemDecoration
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleListAdapter
 import com.github.pedrodimoura.news.articles.presentation.adapter.ArticleSpanSizeLookup
+import com.github.pedrodimoura.news.articles.presentation.entity.ArticleView
 import com.github.pedrodimoura.news.articles.presentation.viewmodel.ArticleViewModel
 import com.github.pedrodimoura.news.common.data.datasource.remote.NetworkCallState
 import com.github.pedrodimoura.news.common.presentation.ui.BaseActivity
@@ -22,9 +24,9 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.scope.currentScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import timber.log.Timber
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), ArticleInteractor.View,
+    ArticleInteractor.View.AdapterCallback<ArticleView> {
 
     override val layoutResId: Int = R.layout.activity_main
     override val menuRes: Int = R.menu.menu_main
@@ -36,7 +38,7 @@ class MainActivity : BaseActivity() {
         resources.getDimension(R.dimen.article_item_margin)
     }
 
-    private val articleListAdapter: ArticleListAdapter by inject()
+    private val articleListAdapter: ArticleListAdapter by inject { parametersOf(this) }
     private val articleItemDecoration: ArticleItemDecoration by currentScope.inject {
         parametersOf(articleRecyclerViewColumnsCount, articleItemMargin)
     }
@@ -48,13 +50,19 @@ class MainActivity : BaseActivity() {
 
     private var forceReload = false
 
+    private var clearDatabase = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupView()
+        observeTopHeadlines()
+        fetchTopHeadlines()
+    }
+
+    override fun setupView() {
         setSupportActionBar(toolbar)
         setupSwipeRefreshLayout()
         setupRecyclerView()
-        observeTopHeadlines()
-        fetchTopHeadlines()
     }
 
     private fun setupSwipeRefreshLayout() {
@@ -86,17 +94,14 @@ class MainActivity : BaseActivity() {
                         observe(topHeadlinesResult.pagedListArticles) {
                             articleListAdapter.submitList(it)
                         }
-
                         observe(topHeadlinesResult.networkCallState) { networkCallState ->
                             when (networkCallState) {
                                 is NetworkCallState.Requesting -> {
-                                    changeEmptyViewVisibility(false)
                                     showSwipeRefresh(true)
+                                    changeEmptyViewVisibility(false)
                                 }
-                                is NetworkCallState.Done -> {
-                                    showSwipeRefresh(false)
-                                }
-                                is NetworkCallState.Failed -> changeEmptyViewVisibility(true)
+                                is NetworkCallState.Done -> showSwipeRefresh(false)
+                                is NetworkCallState.Failed -> showMessageNetworkCallFailed()
                             }
                         }
                     } ?: handleSuccessWithNoData()
@@ -110,25 +115,29 @@ class MainActivity : BaseActivity() {
         articleSwipeRefreshLayout.isRefreshing = show
     }
 
-    private fun fetchTopHeadlines(invalidatingDataSource: Boolean = false) {
+    override fun fetchTopHeadlines(invalidatingDataSource: Boolean) {
         if (invalidatingDataSource)
             invalidateDataSource()
 
         articleViewModel.fetch(DEFAULT_COUNTRY, DEFAULT_PAGE_SIZE, invalidatingDataSource)
     }
 
-    private fun showEmptyView(pagedListAdapter: PagedList<Article>) =
-        changeEmptyViewVisibility(pagedListAdapter.isEmpty())
-
     private fun changeEmptyViewVisibility(visible: Boolean) {
         articleRecyclerView.visibility = if (visible) View.GONE else View.VISIBLE
         emptyView.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
-    private fun invalidateDataSource() = articleViewModel.clearArticles()
+    private fun invalidateDataSource() {
+        if (clearDatabase)
+            articleViewModel.clearArticles()
+    }
 
-    private fun handleSuccessWithNoData() {
-        Timber.d("Success without data")
+    private fun handleSuccessWithNoData() = changeEmptyViewVisibility(true)
+
+    private fun showMessageNetworkCallFailed() {
+        Toast
+            .makeText(this@MainActivity, R.string.default_error_message, Toast.LENGTH_SHORT)
+            .show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -139,6 +148,21 @@ class MainActivity : BaseActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onItemAdapterClick(t: ArticleView) {
+        val intent = Intent(this, ArticleDetailsActivity::class.java)
+        intent.putExtra(ArticleView.EXTRA_KEY, t)
+        startActivity(intent)
+    }
+
+    override fun isDeviceConnected() {
+        clearDatabase = true
+    }
+
+    override fun isDeviceDisconnected() {
+        clearDatabase = false
+        Toast.makeText(this, R.string.device_network_disconnected, Toast.LENGTH_LONG).show()
     }
 
     companion object {

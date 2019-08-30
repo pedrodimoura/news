@@ -13,11 +13,16 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.github.pedrodimoura.news.R
 import com.github.pedrodimoura.news.articles.domain.entity.Article
+import com.github.pedrodimoura.news.articles.presentation.ArticleInteractor
+import com.github.pedrodimoura.news.articles.presentation.entity.ArticleView
+import com.github.pedrodimoura.news.articles.presentation.mapper.asArticleView
 import com.github.pedrodimoura.news.common.util.inflate
 import com.github.pedrodimoura.news.common.util.isMultiplyOf
 import kotlinx.android.synthetic.main.item_article.view.*
 
-class ArticleListAdapter :
+class ArticleListAdapter(
+    private val adapterCallback: ArticleInteractor.View.AdapterCallback<ArticleView>
+) :
     PagedListAdapter<Article, ArticleListAdapter.ArticleViewHolder>(DIFF_UTIL) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder =
@@ -56,6 +61,10 @@ class ArticleListAdapter :
             )
 
             holder.publishedAt.text = hoursAgo
+
+            holder.itemView.setOnClickListener {
+                adapterCallback.onItemAdapterClick(article.asArticleView())
+            }
         }
 
     }
